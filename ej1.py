@@ -4,92 +4,93 @@
 # 5 + 6 = 11
 # Considerar que el usuario puede ingresar los argumentos en cualquier orden. El programa deberá verificar que los argumentos sean válidos (no repetidos, números enteros, y operaciones válidas.
 
-string = "-n 54666r6 5 -m 64444m3 -o + 4444 "
+def calculadora(string):
 
-numeros = ["0","1","2", "3", "4", "5", "6", "7", "8", "9"]
+    numeros = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
-lista = []
+    lista = []
 
-o = None
-n = None
-m = None
+    o = None
+    n = None
+    m = None
 
-for x in string:
-    lista.append(x)
+    for x in string:
+        lista.append(x)
 
-indice = 0
+    indice = 0
 
-operacion = None
+    operacion = None
 
-for x in lista:
+    for x in lista:
 
-    if x == "-":
+        if x == "-":
 
-        if lista[indice + 1] == "n":
+            if lista[indice + 1] == "n":
 
-            es_numero = True
+                es_numero = True
 
-            numero = ""
+                numero = ""
 
-            contador = 3
+                contador = 3
 
-            while es_numero:
+                while es_numero:
 
-                if lista[indice + contador] in numeros:
+                    if lista[indice + contador] in numeros:
 
-                    numero = numero + lista[indice + contador]
-            
-                else:
+                        numero = numero + lista[indice + contador]
 
-                    es_numero = False
+                    else:
 
-                contador = contador + 1
+                        es_numero = False
 
-            n = numero
-            
-        elif lista[indice + 1] == "m":
+                    contador = contador + 1
 
-            es_numero = True
+                n = numero
 
-            numero = ""
+            elif lista[indice + 1] == "m":
 
-            contador = 3
+                es_numero = True
 
-            while es_numero:
+                numero = ""
 
-                if lista[indice + contador] in numeros:
+                contador = 3
 
-                    numero = numero + lista[indice + contador]
-            
-                else:
+                while es_numero:
 
-                    es_numero = False
+                    if lista[indice + contador] in numeros:
 
-                contador = contador + 1
+                        numero = numero + lista[indice + contador]
 
-            m = numero
+                    else:
 
-        elif lista[indice + 1] == "o":
+                        es_numero = False
 
-            o = lista[indice + 3]
+                    contador = contador + 1
 
-            if lista[indice + 3] == "+":
+                m = numero
 
-                operacion = int(str(n)) + int(str(m))
+            elif lista[indice + 1] == "o":
 
-            if lista[indice + 3] == "-":
+                o = lista[indice + 3]
 
-                operacion = int(str(n)) - int(str(m))
+                if lista[indice + 3] == "+":
 
-            if lista[indice + 3] == "*":
+                    operacion = int(str(n)) + int(str(m))
 
-                operacion = int(str(n)) * int(str(m))
+                if lista[indice + 3] == "-":
 
-            if lista[indice + 3] == "/":
+                    operacion = int(str(n)) - int(str(m))
 
-                operacion = int(str(n)) / int(str(m))
-            
-    
-    indice = indice + 1
+                if lista[indice + 3] == "*":
 
-print("\n {} {} {} = {}".format(n, o, m, operacion))
+                    operacion = int(str(n)) * int(str(m))
+
+                if lista[indice + 3] == "/":
+
+                    operacion = int(str(n)) / int(str(m))
+
+        indice = indice + 1
+
+    print("\n {} {} {} = {}".format(n, o, m, operacion))
+
+calculadora("-n 54666r6 5 4444 -m 1 -o +")
