@@ -11,7 +11,7 @@ import sys
 from ast import arg
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-i", type=str, help="Input file")      #Hay que hacer un add por cada opcion.
+parser.add_argument("-i", type=str, help="Input file")          #Hay que hacer un add por cada opcion.
 parser.add_argument("-o", type=str, help="Destination file")
 args = parser.parse_args()
 
