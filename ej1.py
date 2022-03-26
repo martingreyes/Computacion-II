@@ -7,8 +7,6 @@
 import getopt
 import sys
 
-
-
 (opt,arg)=getopt.getopt(sys.argv[1:],'o:n:m:')
 
 for o, a in opt:
