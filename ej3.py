@@ -38,8 +38,16 @@ log_file = args.i
 
 comando = args.c
 
-fd =  open("/Users/martinreyes/Downloads/ej.txt", "w+") 
-subprocess.Popen([comando], stdout=fd)
+log = open("/Users/martinreyes/Documents/Facultad/3ro/Computacion_II//Computacion-II/log.txt", "w+")    # 'w':  Opens a file for writing. Creates a new file if it does not exist or truncates the file if it exists.
+
+out = open("/Users/martinreyes/Documents/Facultad/3ro/Computacion_II//Computacion-II/out.txt", "a+")    # 'a':  Opens a file for appending at the end of the file without truncating it. Creates a new file if it does not exist.
+                                                                            
+        
+
+x = subprocess.Popen(comando.split(),stdout=out,stderr=log)
+
+
+
 
 
 
