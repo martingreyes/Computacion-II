@@ -21,31 +21,45 @@
 # El archivo /tmp/salida no contendrá nada nuevo, ya que el comando fallará. El archivo /tmp/log contendrá:
 # fechayhora: ls: cannot access '/cualquiera': No such file or directory
 
-import argparse
-import sys
-import os
-import subprocess
+def main():
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-c", type=str, help="command")          #Hay que hacer un add por cada opcion.
-parser.add_argument("-o", type=str, help="output file")
-parser.add_argument("-i", type=str, help="log file")
-args = parser.parse_args()
+    import argparse
+    import sys
+    import os
+    import subprocess
+    import codecs
 
-output_file = args.o
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c", type=str, help="command")          #Hay que hacer un add por cada opcion.
+    parser.add_argument("-o", type=str, help="output file")
+    parser.add_argument("-l", type=str, help="log file")
+    args = parser.parse_args()
 
-log_file = args.i
+    output_file = args.o
 
-comando = args.c
+    log_file = args.l
 
-log = open("/Users/martinreyes/Documents/Facultad/3ro/Computacion_II//Computacion-II/log.txt", "w+")    # 'w':  Opens a file for writing. Creates a new file if it does not exist or truncates the file if it exists.
+    comando = args.c
 
-out = open("/Users/martinreyes/Documents/Facultad/3ro/Computacion_II//Computacion-II/out.txt", "a+")    # 'a':  Opens a file for appending at the end of the file without truncating it. Creates a new file if it does not exist.
-                                                                            
+    with open(output_file, "w") as output:
+
+        process = subprocess.Popen(comando.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell = True)
+        stdout, stderr = process.communicate()
+        process2 = subprocess.Popen("date ", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout2, stderr2 = process2.communicate()
+        output.write(stdout)
         
+        
+    with open(log_file, "a") as log:
+        if stderr == b"":
+            log.write(stdout2[:-2] + b": Comando " + bytes(comando, encoding = "utf-8"  ) + b" ejecutado correctamente.\n")
+        
+        else:
+            log.write(stdout2[:-2] + b" " + stderr)
 
-x = subprocess.Popen(comando.split(),stdout=out,stderr=log)
 
+if __name__ == "__main__":
+    main()
 
 
 
