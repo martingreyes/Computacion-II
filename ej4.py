@@ -39,14 +39,23 @@ def main():
     args = parser.parse_args()
 
     numero = args.n
-    
-    sumatoria = 0
 
     proceso = os.fork()
 
     if proceso == 0:    # lo que esta debajo de este if lo hara solo el proceso hijo
 
-        print("Soy hijo ", os.getpid(), " - ", os.getppid(), ": ") 
+        sumatoria = 0 
+
+        pid = os.getpid()
+
+        for x in range(pid):
+
+            if x % 2 == 0:
+
+                sumatoria = sumatoria + x
+
+        print("Soy hijo ", os.getpid(), " - ", os.getppid(), ": ", sumatoria) 
+
     
     else:               # lo que esta debajo de este else lo hara solo el proceso padre
         print("Soy padre: ", os.getpid())
