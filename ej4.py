@@ -40,37 +40,42 @@ def main():
 
     numero = args.n
 
-    proceso = os.fork()
 
-    if proceso == 0:    # lo que esta debajo de este if lo hara solo el proceso hijo
+    def hijo():
+            
+            os._exit(0)
+        
+    def padre():
 
-        sumatoria = 0 
+            while True:
 
-        pid = os.getpid()
+                proceso = os.fork()
 
-        for x in range(pid):
+                if proceso == 0:   # lo que esta debajo de este if lo hara solo el proceso hijo
 
-            if x % 2 == 0:
-
-                sumatoria = sumatoria + x
-
-        print("Soy hijo ", os.getpid(), " - ", os.getppid(), ": ", sumatoria) 
-
-    
-    else:               # lo que esta debajo de este else lo hara solo el proceso padre
-        print("Soy padre: ", os.getpid())
+                    hijo()
 
 
-    
-    
+                else:               # lo que esta debajo de este else lo hara solo el proceso padre
+                    
+                    sumatoria = 0 
 
+                    for x in range(proceso):
 
+                        if x % 2 == 0:
 
-    
+                            sumatoria = sumatoria + x
 
+                    print("\nSoy hijo ", proceso, " - ", os.getpid(), ": ", sumatoria)
 
+                reply = input("\n:")
 
+                if reply == "": 
+                    continue
+                else:
+                    break
 
+    padre()
 
 if __name__=="__main__":
     main()
