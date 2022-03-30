@@ -40,9 +40,9 @@ def main():
 
     numero = args.n
 
+    verboso = args.v
 
     def hijo():
-            
             os._exit(0)
         
     def padre():
@@ -58,6 +58,10 @@ def main():
 
                 else:               # lo que esta debajo de este else lo hara solo el proceso padre
                     
+                    if verboso is not None:
+                    
+                        print("\nStarting process ", proceso)
+                    
                     sumatoria = 0 
 
                     for x in range(proceso):
@@ -66,12 +70,15 @@ def main():
 
                             sumatoria = sumatoria + x
 
-                    print("\nSoy hijo ", proceso, " - ", os.getpid(), ": ", sumatoria)
+                    print("\nEnding process ", proceso)
+                    
+                    print("\n", proceso, " - ", os.getpid(), ": ", sumatoria)
 
                 reply = input("\n:")
 
                 if reply == "": 
                     continue
+
                 else:
                     break
 
