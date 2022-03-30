@@ -28,61 +28,64 @@
 # 32800 – 4658: 268943600
 
 
-import os, argparse, subprocess
+import os, argparse, subprocess, sys
 
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", type=int, help="numero", required=True)          #Hay que hacer un add por cada opcion.
-    parser.add_argument("-u", type=str, help="")
-    parser.add_argument("-v", type=str, help="")
+    parser.add_argument("-n", type=int, help="seguido de -n ponga el numero de procesos que se generaran", required=True)          #Hay que hacer un add por cada opcion.
+    parser.add_argument("-v", help="ponga -v para activar el modo verboso", action='store_true', default=False)
     args = parser.parse_args()
 
+    
     numero = args.n
-
     verboso = args.v
-
-    def hijo():
-            os._exit(0)
-        
-    def padre():
-
-            while True:
-
-                proceso = os.fork()
-
-                if proceso == 0:   # lo que esta debajo de este if lo hara solo el proceso hijo
-
-                    hijo()
+    padre = os.getpid()
 
 
-                else:               # lo que esta debajo de este else lo hara solo el proceso padre
-                    
-                    if verboso is not None:
-                    
-                        print("\nStarting process ", proceso)
-                    
+
+    for x in range(numero):
+
+        if padre == os.getpid():
+
+            os.fork()
+
+            if os.getpid() != padre:
+
+                if verboso is True:
+
+                    print("\nStarting process ", os.getpid())
+             
                     sumatoria = 0 
 
-                    for x in range(proceso):
+                    for x in range(os.getpid()):
 
                         if x % 2 == 0:
 
                             sumatoria = sumatoria + x
-
-                    print("\nEnding process ", proceso)
                     
-                    print("\n", proceso, " - ", os.getpid(), ": ", sumatoria)
+                    print("\nEnding process ", os.getpid())
 
-                reply = input("\n:")
-
-                if reply == "": 
-                    continue
+                    print("\n", os.getpid(), " - ", os.getppid(), ": ", sumatoria)
+                    
+                
 
                 else:
-                    break
+                    
+                    sumatoria = 0 
 
-    padre()
+                    for x in range(os.getpid()):
+
+                        if x % 2 == 0:
+
+                            sumatoria = sumatoria + x
+                    
+                    print("\n", os.getpid(), " - ", os.getppid(), ": ", sumatoria )
+                
+                sys.exit()
+
+
+     
 
 if __name__=="__main__":
     main()
