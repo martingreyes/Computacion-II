@@ -27,13 +27,12 @@
 # Ending process 32800
 # 32800 – 4658: 268943600
 
-
 import os, argparse
 
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", type=int, help="seguido de -n ponga el numero de procesos que se generaran", required=True)         
+    parser.add_argument("-n", type=int, help="seguido de -n ponga el numero de procesos que se generaran", required=True)
     parser.add_argument("-v", help="ponga -v para activar el modo verboso", action='store_true', default=False)
     args = parser.parse_args()
 
