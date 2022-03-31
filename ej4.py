@@ -28,12 +28,12 @@
 # 32800 – 4658: 268943600
 
 
-import os, argparse, subprocess, sys, time
+import os, argparse
 
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", type=int, help="seguido de -n ponga el numero de procesos que se generaran", required=True)          #Hay que hacer un add por cada opcion.
+    parser.add_argument("-n", type=int, help="seguido de -n ponga el numero de procesos que se generaran", required=True)         
     parser.add_argument("-v", help="ponga -v para activar el modo verboso", action='store_true', default=False)
     args = parser.parse_args()
 
@@ -41,46 +41,41 @@ def main():
     verboso = args.v
     padre = os.getpid()
 
+    def suma(pid):
+
+        sumatoria = 0
+
+        for x in range((pid)):
+
+            if x % 2 == 0:
+
+                sumatoria = sumatoria + x
+            
+        return sumatoria
+    
     for x in range(numero):
-
-        # if padre == os.getpid():
-
+      
             os.fork()
 
-            if os.getpid() != padre:
+            if os.getpid() != padre:    # Lo que esta dentro de este if solamente lo hacen los hijos
 
                 if verboso is True:
 
                     print("\nStarting process ", os.getpid())
-             
-                    sumatoria = 0 
-
-                    for x in range(os.getpid()):
-
-                        if x % 2 == 0:
-
-                            sumatoria = sumatoria + x
                     
                     print("\nEnding process ", os.getpid())
 
-                    print("\n", os.getpid(), " - ", os.getppid(), ": ", sumatoria)
+                    print("\n", os.getpid(), " - ", os.getppid(), ": ", suma(os.getpid()))
                     
                 else:
                     
-                    sumatoria = 0 
-
-                    for x in range(os.getpid()):
-
-                        if x % 2 == 0:
-
-                            sumatoria = sumatoria + x
-                    
-                    print("\n", os.getpid(), " - ", os.getppid(), ": ", sumatoria )
+                    print("\n", os.getpid(), " - ", os.getppid(), ": ", suma(os.getpid()) )
                 
-                sys.exit()
+                os._exit(0)             # Evita nietos (?)
 
-
-     
+            os.wait()                   # Padre espera a que termine el hijo
+    
+    # print("Termino el padre")         # Si descomento esta linea se puede ver como el proceso padre espera a que se ejecuten todos los procesos hijos. El proceso padre es el ultimo en terminar.
 
 if __name__=="__main__":
     main()
