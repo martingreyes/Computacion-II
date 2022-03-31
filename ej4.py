@@ -37,16 +37,13 @@ def main():
     parser.add_argument("-v", help="ponga -v para activar el modo verboso", action='store_true', default=False)
     args = parser.parse_args()
 
-    
     numero = args.n
     verboso = args.v
     padre = os.getpid()
 
-
-
     for x in range(numero):
 
-        if padre == os.getpid():
+        # if padre == os.getpid():
 
             os.fork()
 
@@ -68,8 +65,6 @@ def main():
 
                     print("\n", os.getpid(), " - ", os.getppid(), ": ", sumatoria)
                     
-                
-
                 else:
                     
                     sumatoria = 0 
