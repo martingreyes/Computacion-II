@@ -41,6 +41,7 @@
 import argparse
 from subprocess import Popen
 import os
+import string
 
 def main():
 
@@ -50,6 +51,34 @@ def main():
     parser.add_argument("-f", type=str, help= "path del archivo de texto", required=True)
     parser.add_argument("-v", help="ponga -v para activar el modo verboso", action='store_true', default=False)
     args = parser.parse_args()
+
+    archivo = open(args.f + "/arhivo", "w+")
+
+    padre = os.getpid()
+
+    contador = 0
+
+    for x in range(args.n):
+      
+        os.fork()
+
+        if os.getpid() != padre:    # Lo que esta dentro de este if solamente lo hacen los hijos
+
+            for x in range(args.r):
+
+                o = open(args.f + "/arhivo", "a")
+                
+                o.write(string.ascii_uppercase[contador])
+
+
+
+
+                
+
+
+            os._exit(0)             # Evita nietos (?)
+
+        contador = contador + 1
 
 if __name__=="__main__":
     main()
