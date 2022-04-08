@@ -102,7 +102,7 @@ def main():
 
     with open(args.f + "/arhivo", "r") as archivo:
         for linea in archivo:
-            print("\n",linea)
+            print("\n{}".format(linea))
 
         
 if __name__=="__main__":
