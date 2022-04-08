@@ -39,9 +39,10 @@
 # ABCBACABCABCABC
 
 import argparse
-from subprocess import Popen
+import subprocess
 import os
 import string
+import time
 
 def main():
 
@@ -62,23 +63,47 @@ def main():
       
         os.fork()
 
-        if os.getpid() != padre:    # Lo que esta dentro de este if solamente lo hacen los hijos
+        if os.getpid() != padre:      # Lo que esta dentro de este if solamente lo hacen los hijos
 
             for x in range(args.r):
 
-                o = open(args.f + "/arhivo", "a")
+                if args.v is True:
+
+                    print("\nProceso {} escribiendo letra '{}'".format(os.getpid(), string.ascii_uppercase[contador]))
+
+                    o = open(args.f + "/arhivo", "a")
                 
-                o.write(string.ascii_uppercase[contador])
+                    o.write(string.ascii_uppercase[contador])
 
+                    o.flush()             # realizar flush() luego de cada escritura (?)
 
-
-
+                    # time.sleep(1)       # delay de 1 seg entre escritura y escritura (?)
                 
+                else:           
 
+                    o = open(args.f + "/arhivo", "a")
+                
+                    o.write(string.ascii_uppercase[contador])
 
-            os._exit(0)             # Evita nietos (?)
+                    o.flush()             # realizar flush() luego de cada escritura (?)
+
+                    # time.sleep(1)       # delay de 1 seg entre escritura y escritura (?)
+
+            os._exit(0) 
 
         contador = contador + 1
 
+    os.wait()                     # padre espera a hijos (?)  
+
+
+    # El proceso padre debe esperar a que los hijos terminen, luego de lo cual deberá leer el contenido del archivo 
+    # y mostrarlo por pantalla.
+
+
+    with open(args.f + "/arhivo", "r") as archivo:
+        for linea in archivo:
+            print("\n",linea)
+
+        
 if __name__=="__main__":
     main()
