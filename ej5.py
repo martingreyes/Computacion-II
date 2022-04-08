@@ -71,13 +71,13 @@ def main():
 
                     print("\nProceso {} escribiendo letra '{}'".format(os.getpid(), string.ascii_uppercase[contador]))
 
-                    o = open(args.f + "/arhivo", "a")
+                    o = open(args.f + "/archivo", "a")
                 
                     o.write(string.ascii_uppercase[contador])
 
                     o.flush()             # realizar flush() luego de cada escritura (?)
 
-                    # time.sleep(1)       # delay de 1 seg entre escritura y escritura (?)
+                    time.sleep(1)       # delay de 1 seg entre escritura y escritura (?)
                 
                 else:           
 
@@ -92,18 +92,30 @@ def main():
             os._exit(0) 
 
         contador = contador + 1
-
-    os.wait()                     # padre espera a hijos (?)  
+    
+    for i in range(args.n):
+        os.wait()                     # padre espera a hijos (?)  
 
 
     # El proceso padre debe esperar a que los hijos terminen, luego de lo cual deberá leer el contenido del archivo 
     # y mostrarlo por pantalla.
 
+    
+    
+    # Opcion 1:
+    # with open(args.f + "/arhivo", "r") as archivo:
+    #     for linea in archivo:
+    #         print("\n{}".format(linea))
 
-    with open(args.f + "/arhivo", "r") as archivo:
-        for linea in archivo:
-            print("\n{}".format(linea))
+    # Opcion 2:
+    # a = subprocess.Popen(["cat /Users/martinreyes/Downloads/arhivo"], stdout=subprocess.PIPE, universal_newlines=True, shell=True)
+    # out, err = a.communicate()
+    # print(out)
 
-        
+    # Opcion 3:
+    a = subprocess.Popen(["cat /Users/martinreyes/Downloads/arhivo"], universal_newlines=True, shell=True)
+
 if __name__=="__main__":
     main()
+
+# correr programa con: p ej5.py -n 3 -r 1 -f /Users/martinreyes/Downloads
