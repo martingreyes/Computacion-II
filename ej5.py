@@ -53,7 +53,7 @@ def main():
     parser.add_argument("-v", help="ponga -v para activar el modo verboso", action='store_true', default=False)
     args = parser.parse_args()
 
-    archivo = open(args.f + "/arhivo", "w+")
+    archivo = open(args.f + "/archivo", "w+")
 
     padre = os.getpid()
 
@@ -113,9 +113,9 @@ def main():
     # print(out)
 
     # Opcion 3:
-    a = subprocess.Popen(["cat /Users/martinreyes/Downloads/arhivo"], universal_newlines=True, shell=True)
+    a = subprocess.Popen(["cat /Users/martinreyes/Downloads/archivo"], universal_newlines=True, shell=True)
 
 if __name__=="__main__":
     main()
 
-# correr programa con: p ej5.py -n 3 -r 1 -f /Users/martinreyes/Downloads
+# correr programa con: p ej5.py -n 3 -r 5 -f /Users/martinreyes/Downloads -v
