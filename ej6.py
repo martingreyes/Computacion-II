@@ -10,7 +10,7 @@ def main():
         parser.add_argument("-f", type=str, help= "path del archivo de texto", required=True)
         args = parser.parse_args()
 
-        with open("/Users/martinreyes/Downloads/texto.txt") as archivo:
+        with open(args.f) as archivo:
             numero = sum(1 for line in archivo)
         
         archivo = open(args.f, "r")
