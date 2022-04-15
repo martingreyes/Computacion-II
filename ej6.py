@@ -1,6 +1,6 @@
+import os
 import argparse
 import subprocess
-import os
 import string
 import time
 
@@ -10,76 +10,68 @@ def main():
         parser.add_argument("-f", type=str, help= "path del archivo de texto", required=True)
         args = parser.parse_args()
 
+        with open("/Users/martinreyes/Downloads/texto.txt") as archivo:
+            numero = sum(1 for line in archivo)
+        
         archivo = open(args.f, "r")
-
         lineas = archivo.readlines()
-
-        numero = sum(1 for line in archivo)
 
         padre = os.getpid()
 
-        r, w = os.pipe()
-
-        r2, w2 = os.pipe()
-
         contador = 0
-        
-        os.fork()
 
-        if os.getpid() == padre:
+        for contador in range(numero):
 
-            # primero el padre escribe
+            r, w = os.pipe()
+            r2, w2 = os.pipe()
 
-            os.close(r)
-
-            w = os.fdopen(w, 'w')
-
-            print("Padre escribiendo: {}".format(lineas[contador]))
-
-            w.write(lineas[contador])
-
-            w.close()
-
-            # ahora empieza a leer el padre
-
-            os.close(w2)
-
-            r2 = os.fdopen(r2)
-
-            string2 = r2.read()
-
-            print("\nPadre leyendo: \n{}".format(string2))
-
-            os._exit(0)
-
-            contador = contador + 1
-
-        if os.getpid() != padre:        # Lo que esta dentro de este if solamente lo hacen los hijos
-
-            # primero el hijo lee
-
-            os.close(w)
+            os.fork()
             
-            r = os.fdopen(r)
+            if os.getpid() == padre:                   # Proceso padre
 
-            string = r.read()
+                # primero el padre escribe
+                os.close(r)
+                w = os.fdopen(w, 'w')
+                # print("Padre escribiendo: {}".format(lineas[contador]))
+                w.write(lineas[contador])
+                w.close()
 
-            print("Hijo {} leyendo: {}".format(os.getpid(), string))
+            if os.getpid() != padre:         
 
-            # ahora empieza a escribir el hijo
+                # primero el hijo lee
+                os.close(w)
+                r = os.fdopen(r)
+                string = r.read()
+                # print("Hijo {} leyendo: {}".format(os.getpid(), string))
 
-            os.close(r2)
+            if os.getpid() != padre: 
+                
+                # ahora empieza a escribir el hijo
 
-            w2 = os.fdopen(w2, 'w')
+                os.close(r2)
+                w2 = os.fdopen(w2, 'w')
+                pid = os.getpid()
+                # print("Hijo {} escribiendo: \n{}".format(os.getpid(), string[::-1]))
+                w2.write("{} ({})".format(string[::-1], os.getpid()))
+                w2.close() 
 
-            print("\nHijo {} escribiendo: \n{}".format(os.getpid(), string[::-1]))
+                os._exit(0)
 
-            w2.write(string[::-1])
+            if os.getpid() == padre: 
 
-            w2.close()
+                # ahora empieza a leer el padre
 
-            os._exit(0)            
+                os.close(w2)
+                r2 = os.fdopen(r2)
+                string2 = r2.read()
+                # print("\nPadre leyendo: \n{}\n".format(string2))
+                print(string2)
 
-        
+                                   
+        for i in range(numero):
+            os.wait()    
+
 if __name__=="__main__":
     main()
+
+# Correr con p ej6.py -f /Users/martinreyes/Downloads/texto.txt
