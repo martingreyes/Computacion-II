@@ -4,6 +4,10 @@ import subprocess
 import string
 import time
 
+def  crear_archivo():
+    archivo = open("/tmp/texto.txt", "w+")
+    archivo.write("Hola Mundo \nque tal \neste es un archivo \nde ejemplo. ")
+
 def main():
 
         parser = argparse.ArgumentParser()
@@ -27,9 +31,9 @@ def main():
 
             os.fork()
             
-            if os.getpid() == padre:                   # Proceso padre
+            if os.getpid() == padre:    # Proceso padre
 
-                # primero el padre escribe
+                # el padre escribe
                 os.close(r)
                 w = os.fdopen(w, 'w')
                 # print("Padre escribiendo: {}".format(lineas[contador]))
@@ -38,7 +42,7 @@ def main():
 
             if os.getpid() != padre:         
 
-                # primero el hijo lee
+                # el hijo lee
                 os.close(w)
                 r = os.fdopen(r)
                 string = r.read()
@@ -47,7 +51,6 @@ def main():
             if os.getpid() != padre: 
                 
                 # ahora empieza a escribir el hijo
-
                 os.close(r2)
                 w2 = os.fdopen(w2, 'w')
                 pid = os.getpid()
@@ -55,23 +58,24 @@ def main():
                 w2.write("{} ({})".format(string[::-1], os.getpid()))
                 w2.close() 
 
-                os._exit(0)
+                os._exit(0)             # puse el os._exit(0) ya que este es lo ultimo que tiene que hacer el hijo, y asi evita nietos
 
             if os.getpid() == padre: 
 
-                # ahora empieza a leer el padre
-
+                # finalmente lee el padre
                 os.close(w2)
                 r2 = os.fdopen(r2)
                 string2 = r2.read()
                 # print("\nPadre leyendo: \n{}\n".format(string2))
                 print(string2)
-
+            
+        # print("\nTermino padre ({})".format(os.getpid()))        # si descomento esto se puede ver como padre es el ultimo en terminar
                                    
         for i in range(numero):
             os.wait()    
 
 if __name__=="__main__":
+    crear_archivo()
     main()
 
-# Correr con p ej6.py -f /Users/martinreyes/Downloads/texto.txt
+# Correr con: p ej6.py -f /tmp/texto.txt
