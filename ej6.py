@@ -22,8 +22,6 @@ def main():
 
         padre = os.getpid()
 
-        contador = 0
-
         for contador in range(numero):
 
             r, w = os.pipe()
