@@ -18,57 +18,49 @@ def main():
             numero = sum(1 for line in archivo)
         
         archivo = open(args.f, "r")
-        lineas = archivo.readlines()
-
+        lineas = archivo.readlines()    # lista donde c/elemento es una linea del .txt
+    
         padre = os.getpid()
+
+        r, w = os.pipe()
+        r2, w2 = os.pipe()
 
         for contador in range(numero):
 
-            r, w = os.pipe()
-            r2, w2 = os.pipe()
-
             os.fork()
             
-            if os.getpid() == padre:    # Proceso padre
-
-                # el padre escribe
-                os.close(r)
-                w = os.fdopen(w, 'w')
-                # print("Padre escribiendo: {}".format(lineas[contador]))
-                w.write(lineas[contador])
-                w.close()
-
             if os.getpid() != padre:         
 
                 # el hijo lee
                 os.close(w)
                 r = os.fdopen(r)
                 string = r.read()
-                # print("Hijo {} leyendo: {}".format(os.getpid(), string))
 
-            if os.getpid() != padre: 
-                
-                # ahora empieza a escribir el hijo
+                # el hijo escribe
                 os.close(r2)
                 w2 = os.fdopen(w2, 'w')
                 pid = os.getpid()
-                # print("Hijo {} escribiendo: \n{}".format(os.getpid(), string[::-1]))
-                w2.write("{} ({})".format(string[::-1], os.getpid()))
+                w2.write("{}".format(string[::-1]))
                 w2.close() 
 
-                os._exit(0)             # puse el os._exit(0) ya que este es lo ultimo que tiene que hacer el hijo, y asi evita nietos
+                os._exit(0)           # evito nietos
+        
+       # escribe el padre
+        os.close(r)
+        w = os.fdopen(w, 'w')
+        for l in lineas:
+            w.write(l)
+        w.close()
 
-            if os.getpid() == padre: 
+        # lee el padre 
+        os.close(w2)
+        r2 = os.fdopen(r2)
+        while True:
+            string2 = r2.read()
+            if len(string2) == 0:
+                break
+            print(string2)
 
-                # finalmente lee el padre
-                os.close(w2)
-                r2 = os.fdopen(r2)
-                string2 = r2.read()
-                # print("\nPadre leyendo: \n{}\n".format(string2))
-                print(string2)
-            
-        # print("\nTermino padre ({})".format(os.getpid()))        # si descomento esto se puede ver como padre es el ultimo en terminar
-                                   
         for i in range(numero):
             os.wait()    
 
