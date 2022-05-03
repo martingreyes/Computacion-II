@@ -11,7 +11,8 @@ import multiprocessing, os, string, time
 
 def primer_hijo(pipe_w, cola):
     linea = "Abcd"                    #TODO stdin                                       # 1) Hijo 1 lee   
-    pipe_w.send(linea.lower())                                                          # 2) Hijo 1 escribe en pipe                                 
+
+    pipe_w.send(linea.upper())                                                          # 2) Hijo 1 escribe en pipe                                 
     print(cola.get())                                                                   # 5) Hijo 1 lee contenido de la cola y lo muestra por pantalla
     # print("Hijo 1 ({}) muriendo".format(os.getpid()))
 
@@ -19,7 +20,7 @@ def segundo_hijo(cola, pipe_r):
     linea = pipe_r.recv()                                                               # 3) Hijo 2 lee el pipe
     encriptado = ""
     for letra in linea:
-        letra = string.ascii_lowercase[string.ascii_lowercase.index(letra) + 13 ]
+        letra = string.ascii_uppercase[string.ascii_uppercase.index(letra) + 13 ]
         encriptado = encriptado + letra                                               
     cola.put(encriptado)                                                                # 4) Hijo 2 almacena en cola de mensajes el texto leido encriptado
     # print("Hijo 2 ({}) muriendo".format(os.getpid()))
