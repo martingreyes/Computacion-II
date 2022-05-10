@@ -19,7 +19,8 @@ def primer_hijo(pipe_w, cola):
         leido = cola.get()                                                                  # 5) Hijo 1 lee contenido de la cola
         if leido == "bye":
             print("Hijo 1 ({}) muriendo".format(os.getpid()))
-            os.kill(os.getpid(), signal.SIGKILL)
+            break
+        
         print(leido)                                                                        # 6) Hijo 1 lo muestra por pantalla
         
     
