@@ -26,7 +26,6 @@ def primer_hijo(pipe_w, cola):
     
 
 def segundo_hijo(cola, pipe_r):
-    continuar = True
     while True:
         linea = pipe_r.recv()                                                                # 3) Hijo 2 lee el pipe
         if linea.lower() == "bye":
