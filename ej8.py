@@ -23,8 +23,6 @@ def primer_hijo(pipe_w, cola):
         
         print(leido)                                                                        # 6) Hijo 1 lo muestra por pantalla
         
-    
-
 def segundo_hijo(cola, pipe_r):
     while True:
         linea = pipe_r.recv()                                                                # 3) Hijo 2 lee el pipe
