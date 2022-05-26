@@ -13,10 +13,9 @@ import threading, sys, multiprocessing, string, queue
 def leer(pipe_w, cola):
     sys.stdin = open(0)
     while True:                                       
-        print("\nIngrese una línea: ") 
+        print("\nIngrese una línea: ", end="") 
         linea = sys.stdin.readline().rstrip("\n")                                 
         pipe_w.send(linea.lower())
-        
         encriptado = cola.get()
         if encriptado == "bye":
             print("\nHilo {} muriendo".format(threading.current_thread().name))
