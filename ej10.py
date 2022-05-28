@@ -8,41 +8,41 @@
 
 # El primer hijo debera leer desde dicha cola de mensajes y mostrar el contenido cifrado por pantalla.
 
-import threading, sys, multiprocessing, string, queue
+import threading, sys, string, queue
 
-def leer(pipe_w, cola):
+def leer(cola, cola2):
     sys.stdin = open(0)
     while True:                                       
         print("\nIngrese una línea: ", end="") 
-        linea = sys.stdin.readline().rstrip("\n")                                 
-        pipe_w.send(linea.lower())
-        encriptado = cola.get()
+        linea = sys.stdin.readline().rstrip("\n") 
+        cola.put(linea.lower())
+        encriptado = cola2.get()
         if encriptado == "bye":
             print("\nHilo {} muriendo".format(threading.current_thread().name))
             break
         print(encriptado)
     
 
-def encriptar(pipe_r, cola):
+def encriptar(cola, cola2):
     while True:
-        linea = pipe_r.recv()
+        linea = cola.get()
         if linea.lower() == "bye":
-            cola.put("bye")
-            cola.task_done()
+            cola2.put("bye")
+            cola2.task_done()
             print("\nHilo {} muriendo".format(threading.current_thread().name))
             break
         encriptado = ""
         for letra in linea:                               
                 letra = string.ascii_letters[string.ascii_letters.index(letra) + 13 ].upper()
                 encriptado = encriptado + letra
-        cola.put(encriptado)
+        cola2.put(encriptado)
         
 
 def main():
-    r,w = multiprocessing.Pipe()
     cola = queue.Queue()
-    hilo1 = threading.Thread(target=leer,args= (w, cola) , name= "hilo1" , daemon=True)
-    hilo2 = threading.Thread(target=encriptar, args= (r, cola), name= "hilo2", daemon=True)
+    cola2 = queue.Queue()
+    hilo1 = threading.Thread(target=leer,args= (cola, cola2) , name= "hilo1" , daemon=True)
+    hilo2 = threading.Thread(target=encriptar, args= (cola, cola2), name= "hilo2", daemon=True)
 
     hilo1.start()
     hilo2.start()
