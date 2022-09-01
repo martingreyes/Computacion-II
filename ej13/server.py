@@ -34,7 +34,7 @@
 # ls: cannot access '/cualquiera': No such file or directory
 # >
 
-import argparse, socketserver, pickle, subprocess
+import argparse, socketserver, pickle, subprocess, os, threading
 
 class MyTCPHandler(socketserver.BaseRequestHandler):
 
@@ -44,14 +44,16 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
             command = self.request.recv(1024)
             command = pickle.loads(command)
-            print("- {} {} : {}".format(self.client_address[0], self.client_address[1], command))
+
+            if args.c == "p":
+                print("- {} {} : {} ({})".format(self.client_address[0], self.client_address[1], command, os.getpid()))
+            if args.c == "t":
+                print("- {} {} : {} ({}:{} )".format(self.client_address[0], self.client_address[1], command,threading.current_thread().name, threading.get_native_id()))
 
             if command == "exit":
                 dato = pickle.dumps("Chau chau")
                 self.request.sendall(dato) 
-                break   
-                s.close()
-                sys.exit(0)   
+                break    
                         
 
             p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True,  universal_newlines=True, bufsize=10000)
@@ -82,14 +84,15 @@ if __name__ == '__main__':
     address = ("localhost", puerto)
 
     if concurrencia.lower() == "p":
+        print("\nProceso padre ", os.getpid(), "\n")
         socketserver.TCPServer.allow_reuse_address = True
         with ForkedTCPServer(address, MyTCPHandler) as server:
             server.serve_forever()
- 
 
     if concurrencia.lower() == "t":
+        print("\nHilo inicial ", threading.get_native_id(), "\n")
         socketserver.TCPServer.allow_reuse_address = True
-        with ThreadedTCPServer((HOST, PORT), MyTCPHandler) as server:
+        with ThreadedTCPServer(address, MyTCPHandler) as server:
             server.serve_forever()
            
    
