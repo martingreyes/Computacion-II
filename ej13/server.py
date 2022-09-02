@@ -48,7 +48,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             if args.c == "p":
                 print("- {} {} : {} ({})".format(self.client_address[0], self.client_address[1], command, os.getpid()))
             if args.c == "t":
-                print("- {} {} : {} ({}:{} )".format(self.client_address[0], self.client_address[1], command,threading.current_thread().name, threading.get_native_id()))
+                print("- {} {} : {} ({}: {})".format(self.client_address[0], self.client_address[1], command,threading.current_thread().name, threading.get_native_id()))
 
             if command == "exit":
                 dato = pickle.dumps("Chau chau")
@@ -60,11 +60,13 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             salida, error = p.communicate()
             
             if salida == "":
-                dato = pickle.dumps(error)
+                dato =  {"ERROR" :error} 
+                dato = pickle.dumps(dato)
                 self.request.sendall(dato)
             
             if error == "":
-                dato = pickle.dumps(salida)
+                dato =  {"OK" :salida} 
+                dato = pickle.dumps(dato)
                 self.request.sendall(dato)
         
 class ForkedTCPServer(socketserver.ForkingMixIn, socketserver.TCPServer):
@@ -90,7 +92,7 @@ if __name__ == '__main__':
             server.serve_forever()
 
     if concurrencia.lower() == "t":
-        print("\nHilo inicial ", threading.get_native_id(), "\n")
+        print("\n", threading.current_thread().name, threading.get_native_id(), "\n")
         socketserver.TCPServer.allow_reuse_address = True
         with ThreadedTCPServer(address, MyTCPHandler) as server:
             server.serve_forever()

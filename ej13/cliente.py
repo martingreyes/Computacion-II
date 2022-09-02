@@ -19,8 +19,7 @@ while(True) :
     # receive data from client (data, addr)
     msg = s.recv(1024)
     msg = pickle.loads(msg)
-
-    print('- Server reply : '+ msg)
+    print("- {}".format(msg))
 
     if msg == "Chau chau":
         break
