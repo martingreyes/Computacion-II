@@ -34,4 +34,4 @@ while(True) :
         break
 
 #? Correr con p cliente.py -d 127.0.0.1 -p 1234 -ip 4
-#? Correr con p cliente.py -d 127.0.0.1 -p 1234 -ip 6
+#? Correr con p cliente.py -d ::1 -p 1234 -ip 6
