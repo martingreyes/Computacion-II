@@ -50,27 +50,23 @@ def main():
 
 
     if args.c == "raiz":
+        # print(matriz.ready())
         matriz =  raiz.delay(filas) 
+
     
     elif args.c == "pot":
         matriz = pot.delay(filas) 
 
     elif args.c == "log":
         matriz = log.delay(filas) 
-
-    
+        
     else:
         matriz = nada(filas)
         matriz.append("\nLa operacion {} no existe".format(args.c))
 
-    # ! Nunca entra a redis para hacer la operacion
-    print(matriz.ready())
     
-
-
-
-    # sobrescribir_archivo(args.f, matriz)
-
+    sobrescribir_archivo(args.f, matriz.get())
+    # print(matriz.ready())
 
 
 if __name__=="__main__":
@@ -78,5 +74,6 @@ if __name__=="__main__":
 
 
 # docker run --rm -p 6379:6379 redis
-# celery -A celery_confg worker --loglevel=INFO -c4
-# python3 ej17.py -c log
+# celery -A celery_config worker --loglevel=INFO -c4
+# python3 app.py -c log
+
