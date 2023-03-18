@@ -28,13 +28,17 @@ def pregunta_random():
 
     return pregunta, respuesta1, respuesta2
 
-pregunta, respuesta1, respuesta2 = pregunta_random()
+# pregunta, respuesta1, respuesta2 = pregunta_random()
 
-print(pregunta)
-print(respuesta1)
-print(respuesta2)
+# print(pregunta)
+# print(respuesta1)
+# print(respuesta2)
 
+# OUTPUT
 
+# {'id': 3, 'pregunta': '¿Recuerdas dónde se jugó la Copa del Mundial del año 2010?'}
+# {'id': 6, 'respuesta': 'Sudafrica', 'pregunta_id': 3, 'correcta': 1}
+# {'id': 7, 'respuesta': 'Alemania', 'pregunta_id': 3, 'correcta': 0}
 
     
 
