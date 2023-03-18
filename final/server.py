@@ -1,4 +1,4 @@
-import argparse, socketserver, pickle, subprocess, os, threading, socket
+import argparse, socketserver, pickle, subprocess, os, threading, socket, sqlite3
 from pregunta_random import pregunta_random
 
 class MyTCPHandler(socketserver.BaseRequestHandler):
@@ -7,14 +7,14 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
         while True:
 
-            # pregunta, respuesta1, respuesta2 = pregunta_random()
+            pregunta, respuesta1, respuesta2 = pregunta_random()
 
-            pregunta = "¿Como me llamo?"
-            respuesta1 = "Juan"
-            respuesta2 = "Pepe"
+            # pregunta = "¿Como me llamo?"
+            # respuesta1 = "Juan"
+            # respuesta2 = "Pepe"
 
-            # mensaje = "{} \n- Opción 1: {} \n- Opción 2: {}".format(pregunta["pregunta"], respuesta1["respuesta"], respuesta2["respuesta"])
-            mensaje = "{} \n- Opción 1: {} \n- Opción 2: {}".format(pregunta, respuesta1, respuesta2)
+            mensaje = "{} \n Opción 1: {} \n Opción 2: {}".format(pregunta["pregunta"], respuesta1["respuesta"], respuesta2["respuesta"])
+            # mensaje = "{} \n Opción 1: {} \n Opción 2: {}".format(pregunta, respuesta1, respuesta2)
 
             mensaje = pickle.dumps(mensaje)
             self.request.sendall(mensaje)
@@ -23,27 +23,13 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             respuesta = pickle.loads(respuesta)
 
             # print("\n", threading.current_thread().ident) # Para ver que si es IPv4 es atendido por un hilo y si es IPv6 es atendido por otro
-            print("-{}: {} (pid: {}) : {}".format(self.client_address[0], self.client_address[1] ,os.getpid(), respuesta))
+            print("- {}: {} (pid: {}) : {}".format(self.client_address[0], self.client_address[1] ,os.getpid(), respuesta))
             
             if respuesta == "exit":
                 mensaje = pickle.dumps("Chau chau")
                 self.request.sendall(mensaje) 
                 break    
                         
-
-            # p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True,  universal_newlines=True, bufsize=10000)
-            # salida, error = p.communicate()
-            
-            # if salida == "":
-            #     dato =  {"ERROR" :error} 
-            #     dato = pickle.dumps(dato)
-            #     self.request.sendall(dato)
-            
-            # if error == "":
-            #     dato =  {"OK" :salida} 
-            #     dato = pickle.dumps(dato)
-            #     self.request.sendall(dato)
-
 
 class ForkedTCPServer4(socketserver.ForkingMixIn, socketserver.TCPServer):
     address_family = socket.AF_INET
@@ -66,6 +52,7 @@ def abrir_socket_procesos(direccion):
 
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", type=int, help= "puerto donde va atender el servidor")
     args = parser.parse_args()

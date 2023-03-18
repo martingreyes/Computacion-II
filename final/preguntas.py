@@ -1,6 +1,6 @@
 import sqlite3
 
-conexion = sqlite3.connect("/Users/martinreyes/Documents/Facultad/3ro/Computacion II/Computacion-II/final/trivia.db")
+conexion = sqlite3.connect("/Users/martinreyes/Documents/Facultad/3ro/Computacion II/Computacion-II/final/prueba.db")
 
 preguntas = [(0, "¿Cuándo tuvo lugar la primera Copa Mundial de Fútbol?"),
             (1, "¿Quién es el máximo goleador de la historia de la Copa Mundial de Fútbol?"),
@@ -35,7 +35,12 @@ respuestas = [(0, "En 1920", 0, 0),
             (18, "21", 9, 0),
             (19, "22", 9, 1),
         ]
+        
+conexion.execute("CREATE TABLE preguntas (id int AUTO_INCREMENT, pregunta varchar(255), PRIMARY KEY (id))")
 
+conexion.execute("CREATE TABLE respuestas (id int AUTO_INCREMENT, respuesta varchar(255), pregunta_id int, correcta BIT, PRIMARY KEY (id), FOREIGN KEY (pregunta_id) REFERENCES preguntas(id))")
+
+conexion.commit()
 
 conexion.executemany("INSERT INTO preguntas VALUES (?,?)", preguntas)
 
@@ -44,3 +49,5 @@ conexion.executemany("INSERT INTO respuestas VALUES (?,?,?,?)", respuestas)
 conexion.commit()
                     
 conexion.close()
+
+# {'id': 6, 'respuesta': 'Sudafrica', 'pregunta_id': 3, 'correcta': 1}

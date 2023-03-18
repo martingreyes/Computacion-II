@@ -27,7 +27,7 @@ while(True) :
     if msg == "Chau chau":
         break
 
-    respuesta = input("\nOpción 1 o 2: ")
+    respuesta = input("\n+ Opción 1 o 2: ")
     respuesta = pickle.dumps(respuesta)
     s.send(respuesta)
     
