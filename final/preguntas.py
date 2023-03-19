@@ -40,7 +40,7 @@ conexion.execute("CREATE TABLE preguntas (id int AUTO_INCREMENT, pregunta varcha
 
 conexion.execute("CREATE TABLE respuestas (id int AUTO_INCREMENT, respuesta varchar(255), pregunta_id int, correcta BIT, PRIMARY KEY (id), FOREIGN KEY (pregunta_id) REFERENCES preguntas(id))")
 
-conexion.execute("CREATE TABLE jugadores (id int AUTO_INCREMENT, direccion varchar(255), puerto varchar(255), alias varchar(255), puntaje int)")
+conexion.execute("CREATE TABLE jugadores (id int AUTO_INCREMENT, ip varchar(255), puerto varchar(255), alias varchar(255), puntaje int)")
 
 conexion.commit()
 

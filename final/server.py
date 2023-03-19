@@ -7,8 +7,6 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
         global conexion
 
-        print(conexion)
-
         alias = self.request.recv(1024)
 
         alias = pickle.loads(alias)
@@ -95,7 +93,7 @@ class ThreadedTCPServer6(socketserver.ThreadingMixIn, socketserver.TCPServer):
     address_family = socket.AF_INET6
     pass
 
-def abrir_socket_procesos(direccion):
+def abrir_socket_hilos(direccion):
     socketserver.TCPServer.allow_reuse_address = True
 
     if direccion[0] == socket.AF_INET:
@@ -138,7 +136,9 @@ if __name__ == '__main__':
     print("\nProceso: {} Hilo: {}" .format(os.getpid(), threading.current_thread().name))
     for direccion in direcciones:
         print("\nLevantado server en {}: {} ...".format(direccion[4][0], direccion[4][1]))
-        threading.Thread(target=abrir_socket_procesos, args=(direccion,)).start()   # Lanzo un hilo para sokcet IPv4 y otro para IPv6
+        threading.Thread(target=abrir_socket_hilos, args=(direccion,)).start()          #?PROVISORIO
+        
+        # threading.Thread(target=abrir_socket_procesos, args=(direccion,)).start()   # Lanzo un hilo para sokcet IPv4 y otro para IPv6
 
 #? Correr con p server.py -p 1234
 
