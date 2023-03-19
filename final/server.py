@@ -5,16 +5,27 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
     def handle(self):
 
+        global conexion
+
+        print(conexion)
+
+        alias = self.request.recv(1024)
+
+        alias = pickle.loads(alias)
+
+        print("\n¡ {} se ha unido!".format(alias))
+
         while True:
 
-            pregunta, respuesta1, respuesta2 = pregunta_random()
+            # pregunta, respuesta1, respuesta2 = pregunta_random(conexion)
 
-            # pregunta = "¿Como me llamo?"
-            # respuesta1 = "Juan"
-            # respuesta2 = "Pepe"
+            pregunta = "- ¿Como me llamo?"
+            respuesta1 = "Juan"
+            respuesta2 = "Pepe"
 
-            mensaje = "{} \n Opción 1: {} \n Opción 2: {}".format(pregunta["pregunta"], respuesta1["respuesta"], respuesta2["respuesta"])
-            # mensaje = "{} \n Opción 1: {} \n Opción 2: {}".format(pregunta, respuesta1, respuesta2)
+            # mensaje = "{} \n Opción 1: {} \n Opción 2: {}".format(pregunta["pregunta"], respuesta1["respuesta"], respuesta2["respuesta"])
+            
+            mensaje = "{} \n Opción 1: {} \n Opción 2: {}".format(pregunta, respuesta1, respuesta2)
 
             mensaje = pickle.dumps(mensaje)
             self.request.sendall(mensaje)
@@ -22,13 +33,14 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             respuesta = self.request.recv(1024)
             respuesta = pickle.loads(respuesta)
 
-            # print("\n", threading.current_thread().ident) # Para ver que si es IPv4 es atendido por un hilo y si es IPv6 es atendido por otro
-            print("- {}: {} (pid: {}) : {}".format(self.client_address[0], self.client_address[1] ,os.getpid(), respuesta))
+            print("\nAlias: {} | Direccion: {}:{} | Proceso: {} | Hilo: {}" .format(alias, self.client_address[0], self.client_address[1], os.getpid(), threading.current_thread().name))
+            print("{}: {}".format(pregunta,respuesta))
             
             if respuesta == "exit":
                 mensaje = pickle.dumps("Chau chau")
                 self.request.sendall(mensaje) 
-                break    
+                break   
+
                         
 
 class ForkedTCPServer4(socketserver.ForkingMixIn, socketserver.TCPServer):
@@ -57,16 +69,19 @@ if __name__ == '__main__':
     parser.add_argument("-p", type=int, help= "puerto donde va atender el servidor")
     args = parser.parse_args()
 
+    conexion = sqlite3.connect("/Users/martinreyes/Documents/Facultad/3ro/Computacion II/Computacion-II/final/trivia.db", check_same_thread=False)
+
     puerto = args.p
+
+    pregunta, respuesta1, respuesta2 = pregunta_random(conexion)
 
     direcciones = []
     direcciones.append(socket.getaddrinfo("localhost", puerto, socket.AF_INET, 1)[0])
     direcciones.append(socket.getaddrinfo("localhost", puerto, socket.AF_INET6, 1)[0])
 
-
-    # print("\nProceso padre", os.getpid(), "\n")
+    print("\nProceso: {} Hilo: {}" .format(os.getpid(), threading.current_thread().name))
     for direccion in direcciones:
-        print("Server levantado en {}: {} \n".format(direccion[4][0], direccion[4][1]))
+        print("\nLevantado server en {}: {} ...".format(direccion[4][0], direccion[4][1]))
         threading.Thread(target=abrir_socket_procesos, args=(direccion,)).start()   # Lanzo un hilo para sokcet IPv4 y otro para IPv6
 
 #? Correr con p server.py -p 1234
