@@ -15,17 +15,18 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
         print("\n¡ {} se ha unido!".format(alias))
 
+        contador = 1
+
+        puntaje = 0
+
         while True:
 
-            # pregunta, respuesta1, respuesta2 = pregunta_random(conexion)
+            if contador == 6:
+                break
 
-            pregunta = "- ¿Como me llamo?"
-            respuesta1 = "Juan"
-            respuesta2 = "Pepe"
+            pregunta, respuesta1, respuesta2 = pregunta_random(conexion)
 
-            # mensaje = "{} \n Opción 1: {} \n Opción 2: {}".format(pregunta["pregunta"], respuesta1["respuesta"], respuesta2["respuesta"])
-            
-            mensaje = "{} \n Opción 1: {} \n Opción 2: {}".format(pregunta, respuesta1, respuesta2)
+            mensaje = "{}) {} \n     A) {} \n     B) {}".format(contador,pregunta["pregunta"], respuesta1["respuesta"], respuesta2["respuesta"])
 
             mensaje = pickle.dumps(mensaje)
             self.request.sendall(mensaje)
@@ -34,20 +35,63 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             respuesta = pickle.loads(respuesta)
 
             print("\nAlias: {} | Direccion: {}:{} | Proceso: {} | Hilo: {}" .format(alias, self.client_address[0], self.client_address[1], os.getpid(), threading.current_thread().name))
-            print("{}: {}".format(pregunta,respuesta))
+            print("{}: {}".format(pregunta["pregunta"],respuesta))
             
             if respuesta == "exit":
                 mensaje = pickle.dumps("Chau chau")
                 self.request.sendall(mensaje) 
+                print("\n¡ {} se ha ido!".format(alias))
                 break   
 
-                        
+            if respuesta == "A":
+                if respuesta1["correcta"] == 1:
+                    puntaje = puntaje + 20
 
-class ForkedTCPServer4(socketserver.ForkingMixIn, socketserver.TCPServer):
+            else:
+                if respuesta2["correcta"] == 1:
+                    puntaje = puntaje + 20
+
+
+            contador = contador + 1
+
+        mensaje = pickle.dumps("FIN. Gracias por participar!\n")
+        self.request.sendall(mensaje)
+        #TODO Mostrarle al cliente su puntaje y la tabla de posiciones
+        print("\n¡ {} ha finalizado!".format(alias))
+
+#TODO Arreglar
+
+# class ForkedTCPServer4(socketserver.ForkingMixIn, socketserver.TCPServer):
+#     address_family = socket.AF_INET
+#     pass
+
+# class ForkedTCPServer6(socketserver.ForkingMixIn, socketserver.TCPServer):
+#     address_family = socket.AF_INET6
+#     pass
+
+# def abrir_socket_procesos(direccion):
+#     socketserver.TCPServer.allow_reuse_address = True
+
+#     if direccion[0] == socket.AF_INET:
+#         with ForkedTCPServer4(direccion[4], MyTCPHandler) as server:
+#                 server.serve_forever()
+
+#     elif direccion[0] == socket.AF_INET6:
+#         with ForkedTCPServer6(direccion[4], MyTCPHandler) as server:
+#             server.serve_forever()
+
+
+#! Si en vez de usar hilos uso procesos (lo que esta comentado) tira error cuando llamo a
+#! pregunta_random(conexion) ya que habrian dos procesos (proceso padre y proceso hijo) 
+#! que utilizan la conexion al mismo tiempo.
+
+#? PROVISORIO
+
+class ThreadedTCPServer4(socketserver.ThreadingMixIn, socketserver.TCPServer):
     address_family = socket.AF_INET
     pass
 
-class ForkedTCPServer6(socketserver.ForkingMixIn, socketserver.TCPServer):
+class ThreadedTCPServer6(socketserver.ThreadingMixIn, socketserver.TCPServer):
     address_family = socket.AF_INET6
     pass
 
@@ -55,12 +99,24 @@ def abrir_socket_procesos(direccion):
     socketserver.TCPServer.allow_reuse_address = True
 
     if direccion[0] == socket.AF_INET:
-        with ForkedTCPServer4(direccion[4], MyTCPHandler) as server:
-                server.serve_forever()
+        global nombre_hilo4
+        nombre_hilo4 = threading.current_thread().name
+        global numero_hilo4
+        numero_hilo4 = threading.get_native_id()
+        with ThreadedTCPServer4(direccion[4], MyTCPHandler) as server:
+            server.serve_forever()
 
     elif direccion[0] == socket.AF_INET6:
-        with ForkedTCPServer6(direccion[4], MyTCPHandler) as server:
+
+        global nombre_hilo6
+        nombre_hilo6 = threading.current_thread().name
+        global numero_hilo6
+        numero_hilo6 = threading.get_native_id()
+
+        with ThreadedTCPServer6(direccion[4], MyTCPHandler) as server:
             server.serve_forever()
+
+#? FIN PROVISORIO
 
 
 if __name__ == '__main__':

@@ -33,8 +33,15 @@ while(True) :
     if msg == "Chau chau":
         break
 
-    respuesta = input("\n+ Opción 1 o 2: ")
-    respuesta = pickle.dumps(respuesta)
+    if msg == "FIN. Gracias por participar!\n":
+        break
+
+
+    respuesta = input("\n+ Opción A ó B: ")
+    while (respuesta.upper() != "A") and (respuesta.upper() != "B") and (respuesta.upper() != "EXIT"):
+        respuesta = input("\n+ Opción a ó b: ")
+
+    respuesta = pickle.dumps(respuesta.lower())
     s.send(respuesta)
     
 #? Correr con p cliente.py -d 127.0.0.1 -p 1234 -a pepe -ip 4
