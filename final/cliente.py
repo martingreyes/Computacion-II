@@ -3,7 +3,6 @@ import socket, sys, argparse, pickle
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", help= "dirección IP o nombre del servidor al que conectarse")
 parser.add_argument("-p", type=int, help= "puerto donde va atender el servidor")
-parser.add_argument("-a", required=True, help="alias", type=str)
 parser.add_argument("-ip", required=True, help="IPv4 (4) o IPv6 (6)", choices=["4", "6"], type=str)
 args = parser.parse_args()
 
@@ -19,30 +18,18 @@ elif args.ip == "6":
 
 s.connect((host,puerto))
 
-print("\nBienvenido {}. Comenzemos a jugar!".format(args.a))
-
-mensaje = pickle.dumps(args.a)
-s.send(mensaje)
-
 while(True) :
 
     msg = s.recv(1024)
     msg = pickle.loads(msg)
     print("\n{}".format(msg))
 
-    if msg == "Chau chau":
-        break
+    if msg == "- Chau chau":
+        break   
 
-    if msg == "FIN. Gracias por participar!\n":
-        break
-
-
-    respuesta = input("\n+ Opción A ó B: ")
-    while (respuesta.upper() != "A") and (respuesta.upper() != "B") and (respuesta.upper() != "EXIT"):
-        respuesta = input("\n+ Opción a ó b: ")
-
-    respuesta = pickle.dumps(respuesta.lower())
+    respuesta = input("\n+ ")
+    respuesta = pickle.dumps(respuesta)
     s.send(respuesta)
     
-#? Correr con p cliente.py -d 127.0.0.1 -p 1234 -a pepe -ip 4
-#? Correr con p cliente.py -d ::1 -p 1234 -a juan -ip 6
+#? Correr con p cliente.py -d -d 127.0.0.1 -p 1234 -ip 4
+#? Correr con p cliente.py -d ::1 -p 1234 -ip 6
