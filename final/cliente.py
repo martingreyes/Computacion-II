@@ -18,6 +18,31 @@ elif args.ip == "6":
 
 s.connect((host,puerto))
 
+dato = s.recv(1024)
+bienvenida = pickle.loads(dato)
+print("\n{}".format(bienvenida))
+
+alias = input("\n+ ")
+dato = pickle.dumps(alias)
+s.send(dato)
+
+dato = s.recv(1024)
+respuesta = pickle.loads(dato)
+print("\n{}".format(respuesta))
+
+password = input("\n+ ")
+dato = pickle.dumps(password)
+s.send(dato)
+
+
+
+
+
+
+
+
+
+
 while(True) :
 
     msg = s.recv(1024)
