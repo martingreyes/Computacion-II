@@ -4,7 +4,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
     
     def handle(self):           #? HIJO 
 
-        print("\nProceso HIJO: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
+        # print("\nProceso HIJO: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
 
         conexion = sqlite3.connect("/Users/martinreyes/Documents/Facultad/3ro/Computacion II/Computacion-II/final/trivia.db")
 
@@ -59,30 +59,32 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                     
             conexion.close()
 
-        cola = multiprocessing.Queue()
+        r1,w1 = multiprocessing.Pipe()
+        r2,w2 = multiprocessing.Pipe()
 
         pid1 = os.fork()
         
         while True:
 
             if pid1 == 0:       #? NIETO 
-                
                     print("\nProceso NIETO: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
                     conexion = sqlite3.connect("/Users/martinreyes/Documents/Facultad/3ro/Computacion II/Computacion-II/final/trivia.db")
                     pregunta, respuesta1, respuesta2 = pregunta_random(conexion)
-                    cola.put(pregunta)
-                    cola.put(respuesta1)
-                    cola.put(respuesta2)
+                    w1.send(pregunta)
+                    w1.send(respuesta1)
+                    w1.send(respuesta2)
                     print("\nNUEVA PREGUNTA EN LA COLA")
                     #TODO esperar señal de que el cliente contesto
-                    # time.sleep(10)
-           
+                    msg = r2.recv()
+                    print(msg)
+                    
+
         
             else:               #? HIJO
-                    # print("\nProceso HIJO: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
-                    pregunta = cola.get()
-                    respuesta1 = cola.get()
-                    respuesta2 = cola.get()
+                    print("\nProceso HIJO: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
+                    pregunta = r1.recv()
+                    respuesta1 = r1.recv()
+                    respuesta2 = r1.recv()
 
                     pregunta_completa = "- {} \n   1) {} \n   2) {}".format(pregunta["pregunta"], respuesta1["respuesta"], respuesta2["respuesta"])
 
@@ -102,12 +104,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                         os.kill(pid1, signal.SIGTERM)
                         break 
 
-                
-                    
-                    
-
-        
-
+                    w2.send("NECESITO OTRA PREGUNTA!")
 
 
 class ForkedTCPServer4(socketserver.ForkingMixIn, socketserver.TCPServer):
