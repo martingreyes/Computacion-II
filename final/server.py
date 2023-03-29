@@ -1,8 +1,18 @@
 import argparse, socketserver, pickle, subprocess, os, threading, socket, sqlite3, multiprocessing, sys
 
+def primer_nieto(cola):
+    pass
+    # pregunta = "- ¿Hola?"        
+    # dato = pickle.dumps(pregunta)
+    # self.request.sendall(dato) 
+
+def segundo_nieto(cola):
+    pass
+    # respuesta = self.request.recv(1024)
+    # respuesta = pickle.loads(respuesta)
+
 class MyTCPHandler(socketserver.BaseRequestHandler):
     
-
     def handle(self):           #HIJO 
 
         conexion = sqlite3.connect("/Users/martinreyes/Documents/Facultad/3ro/Computacion II/Computacion-II/final/trivia.db")
@@ -15,15 +25,12 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
         dato = self.request.recv(1024)
         alias = pickle.loads(dato)
-
         ip = str(self.client_address[0])
-
         puerto = str(self.client_address[1])
 
         existe = conexion.execute("SELECT * FROM jugadores WHERE alias = '{}'".format(alias)).fetchone()
 
         if existe == None:
-
             respuesta = "- NEW PLAYER!. Ingrese la contraseña que utilizará para el player '{}'".format(alias)
             dato = pickle.dumps(respuesta)
             self.request.sendall(dato)
@@ -32,9 +39,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             password = pickle.loads(dato)
 
             conexion.execute("INSERT INTO jugadores (ip, puerto, alias, password) VALUES (?,?,?,?)",(ip, puerto, alias, password))
-
             conexion.commit()
-                    
             conexion.close()
 
             comienzo = "- Comenzemos a jugar!"
@@ -43,7 +48,6 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
 
         else:
-
             respuesta = "- WELCOME '{}'!. Ingrese su contraseña".format(alias)
             dato = pickle.dumps(respuesta)
             self.request.sendall(dato)
@@ -52,7 +56,6 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             password = pickle.loads(dato)
 
             check = conexion.execute("SELECT * FROM jugadores WHERE alias = '{}' AND password = '{}'".format(alias, password)).fetchone()
-
             if check == None:                       #TODO Cierro bien la conexion ??
                 despedida = pickle.dumps("- Chau chau")
                 self.request.sendall(despedida)    
@@ -66,25 +69,36 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                     
             conexion.close()
 
+        cola = multiprocessing.Queue()
+
+        nieto1 = multiprocessing.Process(target= primer_nieto, args=(cola,))
+        nieto2 = multiprocessing.Process(target= segundo_nieto, args=(cola,))
+        nieto1.start()
+        nieto2.start()
+        nieto1.join()
+        nieto2.join()
+
+
+
         
-        while True:
+        # while True:
 
-            pregunta = "- ¿Hola?"
-            dato = pickle.dumps(pregunta)
-            self.request.sendall(dato) 
+        #     pregunta = "- ¿Hola?"
+        #     dato = pickle.dumps(pregunta)
+        #     self.request.sendall(dato) 
 
-            respuesta = self.request.recv(1024)
-            respuesta = pickle.loads(respuesta)
+        #     respuesta = self.request.recv(1024)
+        #     respuesta = pickle.loads(respuesta)
 
-            print("\nDireccion: {}:{} | Proceso: {} ({})| Hilo: {}" .format(self.client_address[0], self.client_address[1], os.getppid(),os.getpid(), threading.current_thread().name))
-            print("--> {}".format(respuesta))
+        #     print("\nDireccion: {}:{} | Proceso: {} ({})| Hilo: {}" .format(self.client_address[0], self.client_address[1], os.getppid(),os.getpid(), threading.current_thread().name))
+        #     print("--> {}".format(respuesta))
             
-            if respuesta == "exit":                     #TODO Verificar que efectivamente el server cerro la conexion con ese cliente
-                mensaje = pickle.dumps("- Chau chau")
-                self.request.sendall(mensaje) 
-                print("\n----------- {}:{} SALIÓ DE LA SALA -----------".format(self.client_address[0], self.client_address[1]))
-                break 
-            
+        #     if respuesta == "exit":                     #TODO Verificar que efectivamente el server cerro la conexion con ese cliente
+        #         mensaje = pickle.dumps("- Chau chau")
+        #         self.request.sendall(mensaje) 
+        #         print("\n----------- {}:{} SALIÓ DE LA SALA -----------".format(self.client_address[0], self.client_address[1]))
+        #         break 
+
 
 class ForkedTCPServer4(socketserver.ForkingMixIn, socketserver.TCPServer):
     address_family = socket.AF_INET
