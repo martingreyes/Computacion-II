@@ -1,10 +1,11 @@
-import argparse, socketserver, pickle, subprocess, os, threading, socket, sqlite3, multiprocessing, sys, queue, time, signal
+import argparse, socketserver, pickle, os, threading, socket, sqlite3, multiprocessing, sys, signal
+from termcolor import colored
 from pregunta import pregunta_random
 class MyTCPHandler(socketserver.BaseRequestHandler):
     
     def handle(self):           #? HIJO 
 
-        # print("\nProceso HIJO: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
+        print(colored("\nProceso HIJO: {} {} Hilo: {} está recibiendo un cliente".format(os.getppid(), os.getpid(), threading.current_thread().name), "cyan"))
 
         conexion = sqlite3.connect("/Users/martinreyes/Documents/Facultad/3ro/Computacion II/Computacion-II/final/trivia.db")
 
@@ -49,7 +50,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             if check == None:                      
                 despedida = pickle.dumps("- Chau chau")
                 self.request.sendall(despedida)    
-                print("\n----------- {}:{} SALIÓ DE LA SALA -----------".format(self.client_address[0], self.client_address[1]))
+                print("\n-----------  '{}' {}:{} SALIÓ DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
                 sys.exit()
 
             else:
@@ -63,30 +64,43 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
         r2,w2 = multiprocessing.Pipe()
 
         pid1 = os.fork()
-        
+
+        contador = 1
+        puntaje = 0
+        preguntas = True
+    
         while True:
 
             if pid1 == 0:       #? NIETO 
-                    print("\nProceso NIETO: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
-                    conexion = sqlite3.connect("/Users/martinreyes/Documents/Facultad/3ro/Computacion II/Computacion-II/final/trivia.db")
+                conexion = sqlite3.connect("/Users/martinreyes/Documents/Facultad/3ro/Computacion II/Computacion-II/final/trivia.db")
+                if preguntas:
+                    print(colored("\nProceso NIETO: {} {} Hilo: {} está buscando pregunta en la BD".format(os.getppid(), os.getpid(), threading.current_thread().name), "magenta"))
                     pregunta, respuesta1, respuesta2 = pregunta_random(conexion)
                     w1.send(pregunta)
                     w1.send(respuesta1)
                     w1.send(respuesta2)
-                    print("\nNUEVA PREGUNTA EN LA COLA")
-                    #TODO esperar señal de que el cliente contesto
-                    msg = r2.recv()
-                    print(msg)
-                    
 
+                    msg = r2.recv()
+
+                else:
+                    print(colored("\nProceso NIETO: {} {} Hilo: {} está escribiendo puntaje en la BD".format(os.getppid(), os.getpid(), threading.current_thread().name), "magenta"))
+                    puntaje = r2.recv()
+                    conexion.execute("""UPDATE jugadores SET puntaje = {} WHERE alias = '{}' """.format(puntaje, alias))
+                    conexion.commit()
+                    ranking = conexion.execute("SELECT puntaje, alias FROM jugadores ORDER by puntaje DESC").fetchall()
+                    w1.send(ranking)
+                    conexion.close()
+                    break
+                    
         
             else:               #? HIJO
-                    print("\nProceso HIJO: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
+
+                if preguntas:
+                    print(colored("\nProceso HIJO: {} {} Hilo: {} está interactuando con '{}'".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
                     pregunta = r1.recv()
                     respuesta1 = r1.recv()
                     respuesta2 = r1.recv()
-
-                    pregunta_completa = "- {} \n   1) {} \n   2) {}".format(pregunta["pregunta"], respuesta1["respuesta"], respuesta2["respuesta"])
+                    pregunta_completa = "- {}) {} \n     a) {} \n     b) {}".format(contador, pregunta["pregunta"], respuesta1["respuesta"], respuesta2["respuesta"])
 
                     dato = pickle.dumps(pregunta_completa)
                     self.request.sendall(dato) 
@@ -94,17 +108,51 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                     respuesta = self.request.recv(1024)
                     respuesta = pickle.loads(respuesta)
 
-                    print("\nDireccion: {}:{} | Proceso: {} {}| Hilo: {}" .format(self.client_address[0], self.client_address[1], os.getppid(),os.getpid(), threading.current_thread().name))
-                    print("--> {}".format(respuesta))
-
                     if respuesta == "exit":                     
                         mensaje = pickle.dumps("- Chau chau")
                         self.request.sendall(mensaje) 
-                        print("\n----------- {}:{} SALIÓ DE LA SALA -----------".format(self.client_address[0], self.client_address[1]))
+                        print("\n-----------  '{}' {}:{} ABANDONO DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
                         os.kill(pid1, signal.SIGTERM)
                         break 
 
-                    w2.send("NECESITO OTRA PREGUNTA!")
+                    if respuesta == "a":
+                        elegida = respuesta1
+                    else:
+                        elegida = respuesta2
+
+                    if elegida["correcta"] == 1:
+
+                        puntaje = puntaje + 20
+
+                    w2.send("\nNECESITO OTRA PREGUNTA!")
+
+
+                else:
+                    print(colored("\nProceso HIJO: {} {} Hilo: {} está entregando resultados a '{}'".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
+                    mensaje = pickle.dumps("- Obtuviste {} puntos".format(puntaje))
+                    self.request.sendall(mensaje) 
+                    w2.send(puntaje)
+
+                    ranking = r1.recv()
+                    msg = "- Ranking:"
+                    contador = 1
+                    for jugador in ranking:
+                        msg = msg + "\n  {}º {} {} pts".format(contador, jugador[1], jugador[0])
+                        contador = contador +1
+
+                    mensaje = pickle.dumps(msg)
+                    self.request.sendall(mensaje)                 
+
+                    print("\n-----------  '{}' {}:{} SALIÓ DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
+                    os.kill(pid1, signal.SIGTERM)
+                    break 
+
+
+            contador = contador + 1
+
+            if contador == 6:
+                preguntas = False
+
 
 
 class ForkedTCPServer4(socketserver.ForkingMixIn, socketserver.TCPServer):
@@ -139,12 +187,11 @@ if __name__ == '__main__':
     direcciones.append(socket.getaddrinfo("localhost", puerto, socket.AF_INET, 1)[0])
     direcciones.append(socket.getaddrinfo("localhost", puerto, socket.AF_INET6, 1)[0])
 
-    print("\nProceso MAIN: {} Hilo: {}" .format(os.getpid(), threading.current_thread().name))
     for direccion in direcciones:
-        print("\nLevantado server en {}: {} ...".format(direccion[4][0], direccion[4][1]))
+        print(colored("\nProceso MAIN: {} Hilo: {} levantó server en {}: {}" .format(os.getpid(), threading.current_thread().name,direccion[4][0], direccion[4][1]),"green"))
         threading.Thread(target=abrir_socket_procesos, args=(direccion,)).start()   #? Lanzo un hilo para sokcet IPv4 y otro para IPv6
 
-#? Correr con p server.py -p 1234
+#? Correr con python3 server.py -p 1234
 
 
 

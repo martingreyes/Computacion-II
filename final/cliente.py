@@ -47,11 +47,22 @@ while(True) :
     print("\n{}".format(msg))
 
     if msg == "- Chau chau":
+        sys.exit()
+    
+    if "Obtuviste" in msg :
         break   
 
     respuesta = input("\n+ ")
-    respuesta = pickle.dumps(respuesta)
+    while respuesta.lower() != "a" and respuesta.lower() != "b" and respuesta != "exit":
+        respuesta = input("\n+ Ingresa 'a' ó 'b': ")
+    respuesta = pickle.dumps(respuesta.lower())
     s.send(respuesta)
+
+msg = s.recv(1024)
+msg = pickle.loads(msg)
+print("\n{}\n".format(msg))
+
     
-#? Correr con p cliente.py -d 127.0.0.1 -p 1234 -ip 4
-#? Correr con p cliente.py -d ::1 -p 1234 -ip 6
+#? Correr con python3 cliente.py -d 127.0.0.1 -p 1234 -ip 4
+#? Correr con python3 cliente.py -d ::1 -p 1234 -ip 6
+
