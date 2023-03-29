@@ -66,6 +66,8 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                     
             conexion.close()
 
+
+
             
  
 
@@ -113,7 +115,7 @@ def abrir_socket_procesos(direccion):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-p", type=int, help= "puerto donde va atender el servidor")
+    parser.add_argument("-p", default=1234, type=int, help= "puerto donde va atender el servidor")
     args = parser.parse_args()
 
     puerto = args.p

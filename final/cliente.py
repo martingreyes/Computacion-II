@@ -2,7 +2,7 @@ import socket, sys, argparse, pickle
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", help= "dirección IP o nombre del servidor al que conectarse")
-parser.add_argument("-p", type=int, help= "puerto donde va atender el servidor")
+parser.add_argument("-p", default=1234, type=int, help= "puerto donde va atender el servidor")
 parser.add_argument("-ip", required=True, help="IPv4 (4) o IPv6 (6)", choices=["4", "6"], type=str)
 args = parser.parse_args()
 
@@ -34,15 +34,6 @@ password = input("\n+ ")
 dato = pickle.dumps(password)
 s.send(dato)
 
-
-
-
-
-
-
-
-
-
 while(True) :
 
     msg = s.recv(1024)
@@ -56,5 +47,5 @@ while(True) :
     respuesta = pickle.dumps(respuesta)
     s.send(respuesta)
     
-#? Correr con p cliente.py -d -d 127.0.0.1 -p 1234 -ip 4
+#? Correr con p cliente.py -d 127.0.0.1 -p 1234 -ip 4
 #? Correr con p cliente.py -d ::1 -p 1234 -ip 6
