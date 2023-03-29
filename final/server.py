@@ -1,4 +1,4 @@
-import argparse, socketserver, pickle, subprocess, os, threading, socket, sqlite3, multiprocessing, sys
+import argparse, socketserver, pickle, subprocess, os, threading, socket, sqlite3, multiprocessing, sys, queue
 
 class MyTCPHandler(socketserver.BaseRequestHandler):
     
@@ -66,12 +66,36 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
         if pid1 == 0:       #NIETO1 
             print("\nProceso NIETO1: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
+            pregunta = "- ¿Hola?"
+            cola.put(pregunta)
+
         else:
             pid2 = os.fork()
             if pid2 == 0:   #NIETO2
                 print("\nProceso NIETO2: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
-            else:           #HIJO
-                print("\nProceso HIJO: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
+                pregunta = cola.get()
+                dato = pickle.dumps(pregunta)
+                self.request.sendall(dato) 
+
+                print("\n"*5)
+                print("xd")
+
+                respuesta = self.request.recv(1024)
+                respuesta = pickle.loads(respuesta)
+
+                print("\nDireccion: {}:{} | Proceso: {} ({})| Hilo: {}" .format(self.client_address[0], self.client_address[1], os.getppid(),os.getpid(), threading.current_thread().name))
+                print("--> {}".format(respuesta))
+                
+            #     if respuesta == "exit":                     #TODO Verificar que efectivamente el server cerro la conexion con ese cliente
+            #         mensaje = pickle.dumps("- Chau chau")
+            #         self.request.sendall(mensaje) 
+            #         print("\n----------- {}:{} SALIÓ DE LA SALA -----------".format(self.client_address[0], self.client_address[1]))
+            #         break 
+
+
+
+            # else:           #HIJO
+            #     print("\nProceso HIJO: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
 
 
 
@@ -136,10 +160,6 @@ if __name__ == '__main__':
         threading.Thread(target=abrir_socket_procesos, args=(direccion,)).start()   # Lanzo un hilo para sokcet IPv4 y otro para IPv6
 
 #? Correr con p server.py -p 1234
-
-
-
-
 
 
 

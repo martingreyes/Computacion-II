@@ -39,7 +39,7 @@ comienzo = pickle.loads(dato)
 print("\n{}".format(comienzo))
 
 while(True) :
-
+    print("pepeeeee")
     msg = s.recv(1024)
     msg = pickle.loads(msg)
     print("\n{}".format(msg))
