@@ -1,8 +1,8 @@
-import argparse, socketserver, pickle, subprocess, os, threading, socket, sqlite3, multiprocessing, sys, queue
-
+import argparse, socketserver, pickle, subprocess, os, threading, socket, sqlite3, multiprocessing, sys, queue, time, signal
+from pregunta import pregunta_random
 class MyTCPHandler(socketserver.BaseRequestHandler):
     
-    def handle(self):           #HIJO 
+    def handle(self):           #? HIJO 
 
         print("\nProceso HIJO: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
 
@@ -37,7 +37,6 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             dato = pickle.dumps(comienzo)
             self.request.sendall(dato)  
 
-
         else:
             respuesta = "- WELCOME '{}'!. Ingrese su contraseña".format(alias)
             dato = pickle.dumps(respuesta)
@@ -47,7 +46,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             password = pickle.loads(dato)
 
             check = conexion.execute("SELECT * FROM jugadores WHERE alias = '{}' AND password = '{}'".format(alias, password)).fetchone()
-            if check == None:                       #TODO Cierro bien la conexion ??
+            if check == None:                      
                 despedida = pickle.dumps("- Chau chau")
                 self.request.sendall(despedida)    
                 print("\n----------- {}:{} SALIÓ DE LA SALA -----------".format(self.client_address[0], self.client_address[1]))
@@ -63,63 +62,52 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
         cola = multiprocessing.Queue()
 
         pid1 = os.fork()
+        
+        while True:
 
-        if pid1 == 0:       #NIETO1 
-            print("\nProceso NIETO1: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
-            pregunta = "- ¿Hola?"
-            cola.put(pregunta)
-
-        else:
-            pid2 = os.fork()
-            if pid2 == 0:   #NIETO2
-                print("\nProceso NIETO2: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
-                pregunta = cola.get()
-                dato = pickle.dumps(pregunta)
-                self.request.sendall(dato) 
-
-                print("\n"*5)
-                print("xd")
-
-                respuesta = self.request.recv(1024)
-                respuesta = pickle.loads(respuesta)
-
-                print("\nDireccion: {}:{} | Proceso: {} ({})| Hilo: {}" .format(self.client_address[0], self.client_address[1], os.getppid(),os.getpid(), threading.current_thread().name))
-                print("--> {}".format(respuesta))
+            if pid1 == 0:       #? NIETO 
                 
-            #     if respuesta == "exit":                     #TODO Verificar que efectivamente el server cerro la conexion con ese cliente
-            #         mensaje = pickle.dumps("- Chau chau")
-            #         self.request.sendall(mensaje) 
-            #         print("\n----------- {}:{} SALIÓ DE LA SALA -----------".format(self.client_address[0], self.client_address[1]))
-            #         break 
+                    print("\nProceso NIETO: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
+                    conexion = sqlite3.connect("/Users/martinreyes/Documents/Facultad/3ro/Computacion II/Computacion-II/final/trivia.db")
+                    pregunta, respuesta1, respuesta2 = pregunta_random(conexion)
+                    cola.put(pregunta)
+                    cola.put(respuesta1)
+                    cola.put(respuesta2)
+                    print("\nNUEVA PREGUNTA EN LA COLA")
+                    #TODO esperar señal de que el cliente contesto
+                    # time.sleep(10)
+           
+        
+            else:               #? HIJO
+                    # print("\nProceso HIJO: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
+                    pregunta = cola.get()
+                    respuesta1 = cola.get()
+                    respuesta2 = cola.get()
 
+                    pregunta_completa = "- {} \n   1) {} \n   2) {}".format(pregunta["pregunta"], respuesta1["respuesta"], respuesta2["respuesta"])
 
+                    dato = pickle.dumps(pregunta_completa)
+                    self.request.sendall(dato) 
 
-            # else:           #HIJO
-            #     print("\nProceso HIJO: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
+                    respuesta = self.request.recv(1024)
+                    respuesta = pickle.loads(respuesta)
 
+                    print("\nDireccion: {}:{} | Proceso: {} {}| Hilo: {}" .format(self.client_address[0], self.client_address[1], os.getppid(),os.getpid(), threading.current_thread().name))
+                    print("--> {}".format(respuesta))
 
+                    if respuesta == "exit":                     
+                        mensaje = pickle.dumps("- Chau chau")
+                        self.request.sendall(mensaje) 
+                        print("\n----------- {}:{} SALIÓ DE LA SALA -----------".format(self.client_address[0], self.client_address[1]))
+                        os.kill(pid1, signal.SIGTERM)
+                        break 
 
-   
-
+                
+                    
+                    
 
         
-        # while True:
 
-        #     pregunta = "- ¿Hola?"
-        #     dato = pickle.dumps(pregunta)
-        #     self.request.sendall(dato) 
-
-        #     respuesta = self.request.recv(1024)
-        #     respuesta = pickle.loads(respuesta)
-
-        #     print("\nDireccion: {}:{} | Proceso: {} ({})| Hilo: {}" .format(self.client_address[0], self.client_address[1], os.getppid(),os.getpid(), threading.current_thread().name))
-        #     print("--> {}".format(respuesta))
-            
-        #     if respuesta == "exit":                     #TODO Verificar que efectivamente el server cerro la conexion con ese cliente
-        #         mensaje = pickle.dumps("- Chau chau")
-        #         self.request.sendall(mensaje) 
-        #         print("\n----------- {}:{} SALIÓ DE LA SALA -----------".format(self.client_address[0], self.client_address[1]))
-        #         break 
 
 
 class ForkedTCPServer4(socketserver.ForkingMixIn, socketserver.TCPServer):
@@ -157,7 +145,7 @@ if __name__ == '__main__':
     print("\nProceso MAIN: {} Hilo: {}" .format(os.getpid(), threading.current_thread().name))
     for direccion in direcciones:
         print("\nLevantado server en {}: {} ...".format(direccion[4][0], direccion[4][1]))
-        threading.Thread(target=abrir_socket_procesos, args=(direccion,)).start()   # Lanzo un hilo para sokcet IPv4 y otro para IPv6
+        threading.Thread(target=abrir_socket_procesos, args=(direccion,)).start()   #? Lanzo un hilo para sokcet IPv4 y otro para IPv6
 
 #? Correr con p server.py -p 1234
 
