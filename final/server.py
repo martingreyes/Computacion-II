@@ -66,12 +66,12 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                     
             conexion.close()
 
-
-
-            
- 
-
+        
         while True:
+
+            pregunta = "- ¿Hola?"
+            dato = pickle.dumps(pregunta)
+            self.request.sendall(dato) 
 
             respuesta = self.request.recv(1024)
             respuesta = pickle.loads(respuesta)
@@ -83,14 +83,8 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                 mensaje = pickle.dumps("- Chau chau")
                 self.request.sendall(mensaje) 
                 print("\n----------- {}:{} SALIÓ DE LA SALA -----------".format(self.client_address[0], self.client_address[1]))
-                break                               
-    
-            mensaje = "- OK"
-            mensaje = pickle.dumps(mensaje)
-            self.request.sendall(mensaje) 
-
-
-
+                break 
+            
 
 class ForkedTCPServer4(socketserver.ForkingMixIn, socketserver.TCPServer):
     address_family = socket.AF_INET

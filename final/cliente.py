@@ -34,6 +34,10 @@ password = input("\n+ ")
 dato = pickle.dumps(password)
 s.send(dato)
 
+dato = s.recv(1024)
+comienzo = pickle.loads(dato)
+print("\n{}".format(comienzo))
+
 while(True) :
 
     msg = s.recv(1024)
