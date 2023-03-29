@@ -1,19 +1,10 @@
 import argparse, socketserver, pickle, subprocess, os, threading, socket, sqlite3, multiprocessing, sys
 
-def primer_nieto(cola):
-    pass
-    # pregunta = "- ¿Hola?"        
-    # dato = pickle.dumps(pregunta)
-    # self.request.sendall(dato) 
-
-def segundo_nieto(cola):
-    pass
-    # respuesta = self.request.recv(1024)
-    # respuesta = pickle.loads(respuesta)
-
 class MyTCPHandler(socketserver.BaseRequestHandler):
     
     def handle(self):           #HIJO 
+
+        print("\nProceso HIJO: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
 
         conexion = sqlite3.connect("/Users/martinreyes/Documents/Facultad/3ro/Computacion II/Computacion-II/final/trivia.db")
 
@@ -71,13 +62,20 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
         cola = multiprocessing.Queue()
 
-        nieto1 = multiprocessing.Process(target= primer_nieto, args=(cola,))
-        nieto2 = multiprocessing.Process(target= segundo_nieto, args=(cola,))
-        nieto1.start()
-        nieto2.start()
-        nieto1.join()
-        nieto2.join()
+        pid1 = os.fork()
 
+        if pid1 == 0:       #NIETO1 
+            print("\nProceso NIETO1: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
+        else:
+            pid2 = os.fork()
+            if pid2 == 0:   #NIETO2
+                print("\nProceso NIETO2: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
+            else:           #HIJO
+                print("\nProceso HIJO: {} {} Hilo: {}" .format(os.getppid(), os.getpid(), threading.current_thread().name))
+
+
+
+   
 
 
         
@@ -132,7 +130,7 @@ if __name__ == '__main__':
     direcciones.append(socket.getaddrinfo("localhost", puerto, socket.AF_INET, 1)[0])
     direcciones.append(socket.getaddrinfo("localhost", puerto, socket.AF_INET6, 1)[0])
 
-    print("\nProceso: {} Hilo: {}" .format(os.getpid(), threading.current_thread().name))
+    print("\nProceso MAIN: {} Hilo: {}" .format(os.getpid(), threading.current_thread().name))
     for direccion in direcciones:
         print("\nLevantado server en {}: {} ...".format(direccion[4][0], direccion[4][1]))
         threading.Thread(target=abrir_socket_procesos, args=(direccion,)).start()   # Lanzo un hilo para sokcet IPv4 y otro para IPv6
