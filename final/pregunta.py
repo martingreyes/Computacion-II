@@ -4,7 +4,7 @@ import sqlite3, random
 
 def pregunta_random(conexion):
 
-    numero = random.randint(0, 9)
+    numero = random.randint(0, 14)
 
     for x in conexion.execute("SELECT * FROM preguntas WHERE id = {}".format(numero)):
         pregunta = x

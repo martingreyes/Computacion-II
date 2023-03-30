@@ -22,7 +22,7 @@ dato = s.recv(1024)
 bienvenida = pickle.loads(dato)
 print("\n{}".format(bienvenida))
 
-alias = input("\n+ ")
+alias = input("\n+ CLIENTE: ")
 dato = pickle.dumps(alias)
 s.send(dato)
 
@@ -30,7 +30,7 @@ dato = s.recv(1024)
 respuesta = pickle.loads(dato)
 print("\n{}".format(respuesta))
 
-password = input("\n+ ")
+password = input("\n+ {}: ".format(alias))
 dato = pickle.dumps(password)
 s.send(dato)
 
@@ -38,29 +38,29 @@ dato = s.recv(1024)
 comienzo = pickle.loads(dato)
 print("\n{}".format(comienzo))
 
-if comienzo == "- Chau chau":
+if comienzo == "- SERVER: Chau chau":
         sys.exit()   
 
 while(True) :
-    msg = s.recv(1024)
-    msg = pickle.loads(msg)
-    print("\n{}".format(msg))
+    dato = s.recv(1024)
+    pregunta = pickle.loads(dato)
+    print("\n{}".format(pregunta))
 
-    if msg == "- Chau chau":
+    if pregunta == "- SERVER: Chau chau":
         sys.exit()
     
-    if "Obtuviste" in msg :
+    if "Obtuviste" in pregunta:
         break   
 
-    respuesta = input("\n+ ")
+    respuesta = input("\n+ {}: ".format(alias))
     while respuesta.lower() != "a" and respuesta.lower() != "b" and respuesta != "exit":
-        respuesta = input("\n+ Ingresa 'a' ó 'b': ")
+        respuesta = input("\n- Ingresa 'a' ó 'b': ")
     respuesta = pickle.dumps(respuesta.lower())
     s.send(respuesta)
 
-msg = s.recv(1024)
-msg = pickle.loads(msg)
-print("\n{}\n".format(msg))
+dato = s.recv(1024)
+ranking = pickle.loads(dato)
+print("\n{}\n".format(ranking))
 
     
 #? Correr con python3 cliente.py -d 127.0.0.1 -p 1234 -ip 4

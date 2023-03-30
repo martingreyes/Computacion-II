@@ -1,4 +1,4 @@
-import argparse, socketserver, pickle, os, threading, socket, sqlite3, multiprocessing, sys, signal
+import argparse, socketserver, pickle, os, threading, socket, sqlite3, multiprocessing, sys, signal, psutil
 from termcolor import colored
 from pregunta import pregunta_random
 class MyTCPHandler(socketserver.BaseRequestHandler):
@@ -9,7 +9,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
         conexion = sqlite3.connect("/Users/martinreyes/Documents/Facultad/3ro/Computacion II/Computacion-II/final/trivia.db")
 
-        bienvenida = "- Hola soy el server. Decime tu alias por favor"
+        bienvenida = "- SERVER: Hola soy el server. ¿Cómo te llamas?"
         dato = pickle.dumps(bienvenida)
         self.request.sendall(dato)
 
@@ -23,7 +23,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
         existe = conexion.execute("SELECT * FROM jugadores WHERE alias = '{}'".format(alias)).fetchone()
 
         if existe == None:
-            respuesta = "- NEW PLAYER!. Ingrese la contraseña que utilizará para el player '{}'".format(alias)
+            respuesta = "- SERVER: NEW PLAYER!. Ingrese la contraseña que utilizará para el player '{}'".format(alias)
             dato = pickle.dumps(respuesta)
             self.request.sendall(dato)
 
@@ -34,12 +34,12 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             conexion.commit()
             conexion.close()
 
-            comienzo = "- Comenzemos a jugar!"
+            comienzo = "- SERVER: Comenzemos a jugar!"
             dato = pickle.dumps(comienzo)
             self.request.sendall(dato)  
 
         else:
-            respuesta = "- WELCOME '{}'!. Ingrese su contraseña".format(alias)
+            respuesta = "- WELCOME '{}'!. ¿Cúal es tu contraseña?".format(alias)
             dato = pickle.dumps(respuesta)
             self.request.sendall(dato)
 
@@ -48,13 +48,13 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
             check = conexion.execute("SELECT * FROM jugadores WHERE alias = '{}' AND password = '{}'".format(alias, password)).fetchone()
             if check == None:                      
-                despedida = pickle.dumps("- Chau chau")
+                despedida = pickle.dumps("- SERVER: Chau chau")
                 self.request.sendall(despedida)    
                 print("\n-----------  '{}' {}:{} SALIÓ DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
                 sys.exit()
 
             else:
-                comienzo = "- Comenzemos a jugar!"
+                comienzo = "- SERVER: Comenzemos a jugar!"
                 dato = pickle.dumps(comienzo)
                 self.request.sendall(dato) 
                     
@@ -109,10 +109,11 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                     respuesta = pickle.loads(respuesta)
 
                     if respuesta == "exit":                     
-                        mensaje = pickle.dumps("- Chau chau")
+                        mensaje = pickle.dumps("- SERVER: Chau chau")
                         self.request.sendall(mensaje) 
                         print("\n-----------  '{}' {}:{} ABANDONO DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
                         os.kill(pid1, signal.SIGTERM)
+                        #TODO MOSTRAR QUE EL PROCESO NIETO ESTA MUERTO
                         break 
 
                     if respuesta == "a":
@@ -129,12 +130,12 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
                 else:
                     print(colored("\nProceso HIJO: {} {} Hilo: {} está entregando resultados a '{}'".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
-                    mensaje = pickle.dumps("- Obtuviste {} puntos".format(puntaje))
+                    mensaje = pickle.dumps("- SERVER: Obtuviste {} puntos".format(puntaje))
                     self.request.sendall(mensaje) 
                     w2.send(puntaje)
 
                     ranking = r1.recv()
-                    msg = "- Ranking:"
+                    msg = "- SERVER: Mira como quedó el Ranking\n"
                     contador = 1
                     for jugador in ranking:
                         msg = msg + "\n  {}º {} {} pts".format(contador, jugador[1], jugador[0])
@@ -145,6 +146,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
                     print("\n-----------  '{}' {}:{} SALIÓ DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
                     os.kill(pid1, signal.SIGTERM)
+                    #TODO MOSTRAR QUE EL PROCESO NIETO ESTA MUERTO
                     break 
 
 
@@ -153,7 +155,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             if contador == 6:
                 preguntas = False
 
-
+            #TODO MOSTRAR QUE EL PROCESO HIJO ESTA MUERTO
 
 class ForkedTCPServer4(socketserver.ForkingMixIn, socketserver.TCPServer):
     address_family = socket.AF_INET
@@ -191,7 +193,10 @@ if __name__ == '__main__':
         print(colored("\nProceso MAIN: {} Hilo: {} levantó server en {}: {}" .format(os.getpid(), threading.current_thread().name,direccion[4][0], direccion[4][1]),"green"))
         threading.Thread(target=abrir_socket_procesos, args=(direccion,)).start()   #? Lanzo un hilo para sokcet IPv4 y otro para IPv6
 
+
+
 #? Correr con python3 server.py -p 1234
+#? Ver procesos que estan utilizando el puerto 1234: sudo lsof -i:1234
 
 
 
