@@ -68,6 +68,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
         contador = 1
         puntaje = 0
         preguntas = True
+        hechas = []
     
         while True:
 
@@ -75,7 +76,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                 conexion = sqlite3.connect("/Users/martinreyes/Documents/Facultad/3ro/Computacion II/Computacion-II/final/trivia.db")
                 if preguntas:
                     print(colored("\nProceso NIETO: {} {} Hilo: {} está buscando pregunta en la BD".format(os.getppid(), os.getpid(), threading.current_thread().name), "magenta"))
-                    pregunta, respuesta1, respuesta2 = pregunta_random(conexion)
+                    pregunta, respuesta1, respuesta2 = pregunta_random(conexion, hechas)
                     w1.send(pregunta)
                     w1.send(respuesta1)
                     w1.send(respuesta2)
@@ -135,6 +136,11 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                     w2.send(puntaje)
 
                     ranking = r1.recv()
+                    os.kill(pid1, signal.SIGTERM)      #? No hace falta ya que NIETO se muere cuando HIJO muere 
+                    #TODO MOSTRAR QUE EL PROCESO NIETO ESTA MUERTO
+                    
+
+
                     msg = "- SERVER: Mira como quedó el Ranking\n"
                     contador = 1
                     for jugador in ranking:
@@ -145,12 +151,12 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                     self.request.sendall(mensaje)                 
 
                     print("\n-----------  '{}' {}:{} SALIÓ DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
-                    os.kill(pid1, signal.SIGTERM)
-                    #TODO MOSTRAR QUE EL PROCESO NIETO ESTA MUERTO
+                    
                     break 
 
 
             contador = contador + 1
+
 
             if contador == 6:
                 preguntas = False
@@ -197,6 +203,9 @@ if __name__ == '__main__':
 
 #? Correr con python3 server.py -p 1234
 #? Ver procesos que estan utilizando el puerto 1234: sudo lsof -i:1234
+#? Ver procesos htop o ps
+
+
 
 
 

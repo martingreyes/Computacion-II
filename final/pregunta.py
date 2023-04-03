@@ -2,9 +2,15 @@ import sqlite3, random
 
 #Transforma un registro random de la tabla pregunta en un diccionario. Por ejemplo: pregunta = {id: 0, pregunta: “¿Quien ganó el último mundial?”}
 
-def pregunta_random(conexion):
+def pregunta_random(conexion, hechas):
 
     numero = random.randint(0, 14)
+
+    while numero in hechas:
+
+        numero = random.randint(0, 14)
+
+    hechas.append(numero)
 
     for x in conexion.execute("SELECT * FROM preguntas WHERE id = {}".format(numero)):
         pregunta = x
