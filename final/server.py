@@ -1,4 +1,4 @@
-import argparse, socketserver, pickle, os, threading, socket, sqlite3, multiprocessing, sys, signal, psutil
+import argparse, socketserver, pickle, os, threading, socket, sqlite3, multiprocessing, sys, signal, psutil, time
 from termcolor import colored
 from pregunta import pregunta_random
 class MyTCPHandler(socketserver.BaseRequestHandler):
@@ -51,6 +51,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                 despedida = pickle.dumps("- SERVER: Chau chau")
                 self.request.sendall(despedida)    
                 print("\n-----------  '{}' {}:{} SALIÓ DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
+                print(colored("\nProceso HIJO: {} {} Hilo: {} está muriendo ... ".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
                 sys.exit()
 
             else:
@@ -113,8 +114,12 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                         mensaje = pickle.dumps("- SERVER: Chau chau")
                         self.request.sendall(mensaje) 
                         print("\n-----------  '{}' {}:{} ABANDONO DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
-                        os.kill(pid1, signal.SIGTERM)
-                        #TODO MOSTRAR QUE EL PROCESO NIETO ESTA MUERTO
+                        
+                        os.kill(pid1, signal.SIGTERM)      #? No hace falta ya que NIETO se muere cuando HIJO muere 
+                        time.sleep(2)
+                        nieto = psutil.Process(pid1)
+                        print(colored("\nProceso NIETO: {} {} Hilo: {} ha muerto. Su estado es {}".format(os.getppid(), os.getpid(), threading.current_thread().name, nieto.status()), "magenta"))
+                        print(colored("\nProceso HIJO: {} {} Hilo: {} está muriendo ... ".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
                         break 
 
                     if respuesta == "a":
@@ -130,16 +135,20 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
 
                 else:
-                    print(colored("\nProceso HIJO: {} {} Hilo: {} está entregando resultados a '{}'".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
+                    print(colored("\nProceso HIJO: {} {} Hilo: {} está mostrando puntaje a '{}'".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
                     mensaje = pickle.dumps("- SERVER: Obtuviste {} puntos".format(puntaje))
                     self.request.sendall(mensaje) 
                     w2.send(puntaje)
 
                     ranking = r1.recv()
-                    os.kill(pid1, signal.SIGTERM)      #? No hace falta ya que NIETO se muere cuando HIJO muere 
-                    #TODO MOSTRAR QUE EL PROCESO NIETO ESTA MUERTO
-                    
 
+                    os.kill(pid1, signal.SIGTERM)      #? No hace falta ya que NIETO se muere cuando HIJO muere 
+                    time.sleep(2)
+                    nieto = psutil.Process(pid1)
+                    print(colored("\nProceso NIETO: {} {} Hilo: {} ha muerto. Su estado es {}".format(os.getppid(), os.getpid(), threading.current_thread().name, nieto.status()), "magenta"))
+               
+                    
+                    print(colored("\nProceso HIJO: {} {} Hilo: {} está mostrando ranking a '{}'".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
 
                     msg = "- SERVER: Mira como quedó el Ranking\n"
                     contador = 1
@@ -152,6 +161,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
                     print("\n-----------  '{}' {}:{} SALIÓ DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
                     
+                    print(colored("\nProceso HIJO: {} {} Hilo: {} está muriendo ... ".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
                     break 
 
 
@@ -161,7 +171,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             if contador == 6:
                 preguntas = False
 
-            #TODO MOSTRAR QUE EL PROCESO HIJO ESTA MUERTO
+
 
 class ForkedTCPServer4(socketserver.ForkingMixIn, socketserver.TCPServer):
     address_family = socket.AF_INET
