@@ -1,0 +1,19 @@
+LOG
+
+Server levantado el 4/4/2023 12:41:10 
+
+Server levantado el 4/4/2023 12:41:21 
+
+Server levantado el 4/4/2023 12:46:11 
+
+Server levantado el 4/4/2023 13:1:5 
+
+Server levantado el 4/4/2023 13:2:16 
+
+Server levantado el 4/4/2023 13:4:14 
+
+Server levantado el 4/4/2023 13:5:25 
+
+Server levantado el 4/4/2023 13:5:48 
+
+Server levantado el 4/4/2023 13:8:11 
