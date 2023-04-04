@@ -1,16 +1,14 @@
 import argparse, socketserver, pickle, os, threading, socket, sqlite3, multiprocessing, sys, signal, psutil, time, datetime
 from termcolor import colored
 from pregunta import pregunta_random
+from log import escribir
 class MyTCPHandler(socketserver.BaseRequestHandler):
     
     def handle(self):           #? HIJO 
 
-        print("\n----------- {}:{} ENTRÓ A LA SALA -----------".format(self.client_address[0], self.client_address[1]))
-        #TODO ESCRIBIR EN LOG QUE SALIO DE LA SALA
+        print("\n----------- {}:{} ENTRÓ A LA SALA -----------".format(self.client_address[0], self.client_address[1]))     
         print(colored("\nProceso HIJO: {} {} Hilo: {} está escribiendo en log.txt".format(os.getppid(), os.getpid(), threading.current_thread().name), "cyan"))
-
-
-
+        escribir("\n    {}:{} entró a la sala ".format(self.client_address[0], self.client_address[1]), lock)
 
         print(colored("\nProceso HIJO: {} {} Hilo: {} está recibiendo un cliente".format(os.getppid(), os.getpid(), threading.current_thread().name), "cyan"))
 
@@ -56,9 +54,8 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                 despedida = pickle.dumps("- SERVER: Chau chau")
                 self.request.sendall(despedida)    
                 print("\n-----------  '{}' {}:{} SALIÓ DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
-
-                #TODO ESCRIBIR EN LOG QUE SALIO DE LA SALA
                 print(colored("\nProceso HIJO: {} {} Hilo: {} está escribiendo en log.txt".format(os.getppid(), os.getpid(), threading.current_thread().name), "cyan"))
+                escribir("\n    {}:{} '{}' salió de la la sala ".format(self.client_address[0], self.client_address[1],alias), lock)
                 print(colored("\nProceso HIJO: {} {} Hilo: {} muriendo ... ".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
                 sys.exit()
 
@@ -121,13 +118,14 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                     if respuesta == "exit":                     
                         mensaje = pickle.dumps("- SERVER: Chau chau")
                         self.request.sendall(mensaje) 
-                        print("\n-----------  '{}' {}:{} ABANDONO DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
+                        print("\n-----------  '{}' {}:{} ABANDONÓ DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
                         os.kill(pidnieto, signal.SIGTERM)      #? No hace falta ya que NIETO se muere cuando HIJO muere 
                         time.sleep(2)
                         nieto = psutil.Process(pidnieto)
                         print(colored("\nProceso NIETO: {} {} Hilo: {} ha muerto. Su estado es {}".format(os.getppid(), os.getpid(), threading.current_thread().name, nieto.status()), "magenta"))
-                         #TODO ESCRIBIR EN LOG QUE SALIO DE LA SALA
+                    
                         print(colored("\nProceso HIJO: {} {} Hilo: {} está escribiendo en log.txt".format(os.getppid(), os.getpid(), threading.current_thread().name), "cyan"))
+                        escribir("\n    {}:{} '{}' abandonó la la sala ".format(self.client_address[0], self.client_address[1],alias), lock)
                         print(colored("\nProceso HIJO: {} {} Hilo: {} muriendo ... ".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
 
                         break 
@@ -170,9 +168,8 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                     self.request.sendall(mensaje)                 
 
                     print("\n-----------  '{}' {}:{} SALIÓ DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
-
-                    #TODO ESCRIBIR EN LOG QUE SALIO DE LA SALA
                     print(colored("\nProceso HIJO: {} {} Hilo: {} está escribiendo en log.txt".format(os.getppid(), os.getpid(), threading.current_thread().name), "cyan"))
+                    escribir("\n    {}:{} '{}' salió de la la sala ".format(self.client_address[0], self.client_address[1],alias), lock)
                     print(colored("\nProceso HIJO: {} {} Hilo: {} muriendo ... ".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
                     break 
 
@@ -217,12 +214,12 @@ if __name__ == '__main__':
 
     if os.path.isfile(nombre_archivo):
         with open(nombre_archivo, 'a') as archivo:
-            archivo.write("\nServer levantado el {}/{}/{} {}:{}:{} \n".format(now.day, now.month, now.year, now.hour, now.minute, now.second))
+            archivo.write("\n\nServer levantado el {}/{}/{} {}:{}:{}".format(now.day, now.month, now.year, now.hour, now.minute, now.second))
             archivo.close()
     else:
         with open(nombre_archivo, 'w') as archivo:
             archivo.write("LOG\n")
-            archivo.write("\nServer levantado el {}/{}/{} {}:{}:{} \n".format(now.day, now.month, now.year, now.hour, now.minute, now.second))
+            archivo.write("\nServer levantado el {}/{}/{} {}:{}:{}".format(now.day, now.month, now.year, now.hour, now.minute, now.second))
             archivo.close()
 
     lock = multiprocessing.Lock()
