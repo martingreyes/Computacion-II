@@ -121,7 +121,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                         print("\n-----------  '{}' {}:{} ABANDONÓ DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
                         os.kill(pidnieto, signal.SIGTERM)      #? No hace falta ya que NIETO se muere cuando HIJO muere 
                         time.sleep(2)
-                        nieto = psutil.Process(pidnieto)
+                        nieto = psutil.Process(pidnieto)        #? crea un objeto Process que representa un proceso del sistema identificado por su PID, para luego ver su estado
                         print(colored("\nProceso NIETO: {} {} Hilo: {} ha muerto. Su estado es {}".format(os.getppid(), os.getpid(), threading.current_thread().name, nieto.status()), "magenta"))
                     
                         print(colored("\nProceso HIJO: {} {} Hilo: {} está escribiendo en log.txt".format(os.getppid(), os.getpid(), threading.current_thread().name), "cyan"))

@@ -17,3 +17,17 @@ Server levantado el 4/4/2023 14:43:7
 Server levantado el 4/4/2023 14:45:31
 
 Server levantado el 4/4/2023 14:45:42
+
+Server levantado el 4/4/2023 15:9:10
+
+    ::1:51782 entró a la sala 
+
+    ::1:51782 'pepe' salió de la la sala 
+
+    ::1:51804 entró a la sala 
+
+    ::1:51804 'pepe' salió de la la sala 
+
+    ::1:51805 entró a la sala 
+
+    ::1:51805 'pepe' abandonó la la sala 
