@@ -31,3 +31,21 @@ Server levantado el 4/4/2023 15:9:10
     ::1:51805 entró a la sala 
 
     ::1:51805 'pepe' abandonó la la sala 
+
+Server levantado el 11/4/2023 9:37:15
+
+Server levantado el 11/4/2023 9:37:28
+
+    127.0.0.1:49513 entró a la sala 
+
+    ::1:49514 entró a la sala 
+
+    127.0.0.1:49513 'pepe' abandonó la la sala 
+
+    ::1:49514 'pepe' salió de la la sala 
+
+Server levantado el 11/4/2023 10:39:21
+
+    127.0.0.1:49977 entró a la sala 
+
+    127.0.0.1:49977 'martin' salió de la la sala 

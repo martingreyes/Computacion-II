@@ -192,14 +192,22 @@ class ForkedTCPServer6(socketserver.ForkingMixIn, socketserver.TCPServer):
 
 def abrir_socket_procesos(direccion):
     socketserver.TCPServer.allow_reuse_address = True
+    
+    try:
+        if direccion[0] == socket.AF_INET:
+            with ForkedTCPServer4(direccion[4], MyTCPHandler) as server:
+                    server.serve_forever()
+    except:
+        print(colored("\nNo soporta IPv4","green"))
 
-    if direccion[0] == socket.AF_INET:
-        with ForkedTCPServer4(direccion[4], MyTCPHandler) as server:
+
+    try:
+        if direccion[0] == socket.AF_INET6:
+            with ForkedTCPServer6(direccion[4], MyTCPHandler) as server:
                 server.serve_forever()
 
-    elif direccion[0] == socket.AF_INET6:
-        with ForkedTCPServer6(direccion[4], MyTCPHandler) as server:
-            server.serve_forever()
+    except:
+        print(colored("\nNo soporta IPv6","green"))
 
 
 if __name__ == '__main__':
@@ -229,6 +237,8 @@ if __name__ == '__main__':
     direcciones = []
     direcciones.append(socket.getaddrinfo("localhost", puerto, socket.AF_INET, 1)[0])
     direcciones.append(socket.getaddrinfo("localhost", puerto, socket.AF_INET6, 1)[0])
+
+    #TODO Try (en Docker tira error cuando levanta thread 2 ipv6)
 
     for direccion in direcciones:
         print(colored("\nProceso MAIN: {} Hilo: {} levantó server en {}: {}" .format(os.getpid(), threading.current_thread().name,direccion[4][0], direccion[4][1]),"green"))
