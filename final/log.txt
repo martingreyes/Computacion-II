@@ -49,3 +49,11 @@ Server levantado el 11/4/2023 10:39:21
     127.0.0.1:49977 entró a la sala 
 
     127.0.0.1:49977 'martin' salió de la la sala 
+
+Server levantado el 11/4/2023 14:2:18
+
+Server levantado el 11/4/2023 14:2:50
+
+Server levantado el 11/4/2023 14:3:0
+
+Server levantado el 11/4/2023 14:3:10

@@ -196,18 +196,20 @@ def abrir_socket_procesos(direccion):
     try:
         if direccion[0] == socket.AF_INET:
             with ForkedTCPServer4(direccion[4], MyTCPHandler) as server:
-                    server.serve_forever()
+                print(colored("\nProceso MAIN: {} Hilo: {} levantó server en {}: {}" .format(os.getpid(), threading.current_thread().name,direccion[4][0], direccion[4][1]),"green"))
+                server.serve_forever()
     except:
-        print(colored("\nNo soporta IPv4","green"))
+        print(colored("\nProceso MAIN: {} Hilo: {} NO levantó server en {}: {}" .format(os.getpid(), threading.current_thread().name,direccion[4][0], direccion[4][1]),"green"))
 
 
     try:
         if direccion[0] == socket.AF_INET6:
             with ForkedTCPServer6(direccion[4], MyTCPHandler) as server:
+                print(colored("\nProceso MAIN: {} Hilo: {} levantó server en {}: {}" .format(os.getpid(), threading.current_thread().name,direccion[4][0], direccion[4][1]),"green"))
                 server.serve_forever()
 
     except:
-        print(colored("\nNo soporta IPv6","green"))
+        print(colored("\nProceso MAIN: {} Hilo: {} NO levantó server en {}: {}" .format(os.getpid(), threading.current_thread().name,direccion[4][0], direccion[4][1]),"green"))
 
 
 if __name__ == '__main__':
@@ -239,9 +241,7 @@ if __name__ == '__main__':
     direcciones.append(socket.getaddrinfo("localhost", puerto, socket.AF_INET6, 1)[0])
 
     #TODO Try (en Docker tira error cuando levanta thread 2 ipv6)
-
     for direccion in direcciones:
-        print(colored("\nProceso MAIN: {} Hilo: {} levantó server en {}: {}" .format(os.getpid(), threading.current_thread().name,direccion[4][0], direccion[4][1]),"green"))
         threading.Thread(target=abrir_socket_procesos, args=(direccion,)).start()   #? Lanzo un hilo para sokcet IPv4 y otro para IPv6
 
 
