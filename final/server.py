@@ -12,7 +12,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
         print(colored("\nProceso HIJO: {} {} Hilo: {} está recibiendo un cliente".format(os.getppid(), os.getpid(), threading.current_thread().name), "cyan"))
 
-        conexion = sqlite3.connect("/Users/martinreyes/Documents/Facultad/3ro/Computacion II/Computacion-II/final/trivia.db")
+        conexion = sqlite3.connect("/trivia.db")
 
         bienvenida = "- SERVER: Hola soy el server. ¿Cómo te llamas?"
         dato = pickle.dumps(bienvenida)
