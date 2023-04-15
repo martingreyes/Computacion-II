@@ -79,7 +79,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
         while True:
 
             if pidnieto == 0:       #? NIETO 
-                conexion = sqlite3.connect("/Users/martinreyes/Documents/Facultad/3ro/Computacion II/Computacion-II/final/trivia.db")
+                conexion = sqlite3.connect("/trivia.db")
                 if preguntas:
                     print(colored("\nProceso NIETO: {} {} Hilo: {} está buscando pregunta en la BD".format(os.getppid(), os.getpid(), threading.current_thread().name), "magenta"))
                     pregunta, respuesta1, respuesta2 = pregunta_random(conexion, hechas)

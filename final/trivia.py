@@ -1,6 +1,6 @@
 import sqlite3
 
-conexion = sqlite3.connect("/Users/martinreyes/Documents/Facultad/3ro/Computacion II/Computacion-II/final/trivia.db")
+conexion = sqlite3.connect("/trivia.db")
 
 preguntas = [(0, "¿Capital de Brasil?"),
             (1, "¿Nacionalidad de Roger Federer?"),
