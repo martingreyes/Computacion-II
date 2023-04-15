@@ -237,8 +237,8 @@ if __name__ == '__main__':
     puerto = args.p
 
     direcciones = []
-    direcciones.append(socket.getaddrinfo("localhost", puerto, socket.AF_INET, 1)[0])
-    direcciones.append(socket.getaddrinfo("localhost", puerto, socket.AF_INET6, 1)[0])
+    direcciones.append(socket.getaddrinfo("0.0.0.0", puerto, socket.AF_INET, 1)[0])
+    direcciones.append(socket.getaddrinfo("::", puerto, socket.AF_INET6, 1)[0])
 
     #TODO Try (en Docker tira error cuando levanta thread 2 ipv6)
     for direccion in direcciones:
