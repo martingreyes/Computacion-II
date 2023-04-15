@@ -245,7 +245,6 @@ if __name__ == '__main__':
         threading.Thread(target=abrir_socket_procesos, args=(direccion,)).start()   #? Lanzo un hilo para sokcet IPv4 y otro para IPv6
 
 
-
 #? Correr con python3 server.py -p 1234
 #? Ver procesos que estan utilizando el puerto 1234: sudo lsof -i:1234
 #? Ver procesos htop o ps
