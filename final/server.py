@@ -191,12 +191,13 @@ class ForkedTCPServer6(socketserver.ForkingMixIn, socketserver.TCPServer):
     pass
 
 def abrir_socket_procesos(direccion):
-    socketserver.TCPServer.allow_reuse_address = True
+    # socketserver.TCPServer.allow_reuse_address = True
     
     try:
         if direccion[0] == socket.AF_INET:
             with ForkedTCPServer4(direccion[4], MyTCPHandler) as server:
                 print(colored("\nProceso MAIN: {} Hilo: {} levantó server en {}: {}" .format(os.getpid(), threading.current_thread().name,direccion[4][0], direccion[4][1]),"green"))
+                socketserver.TCPServer.allow_reuse_address = True
                 server.serve_forever()
     except Exception as error:
         print(colored("\nProceso MAIN: {} Hilo: {} NO levantó server en {}: {} ya que {}" .format(os.getpid(), threading.current_thread().name,direccion[4][0], direccion[4][1], error),"green"))
@@ -206,6 +207,7 @@ def abrir_socket_procesos(direccion):
         if direccion[0] == socket.AF_INET6:
             with ForkedTCPServer6(direccion[4], MyTCPHandler) as server:
                 print(colored("\nProceso MAIN: {} Hilo: {} levantó server en {}: {}" .format(os.getpid(), threading.current_thread().name,direccion[4][0], direccion[4][1]),"green"))
+                socketserver.TCPServer.allow_reuse_address = True
                 server.serve_forever()
 
     except Exception as error:
