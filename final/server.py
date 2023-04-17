@@ -12,7 +12,8 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
         print(colored("\nProceso HIJO: {} {} Hilo: {} está recibiendo un cliente".format(os.getppid(), os.getpid(), threading.current_thread().name), "cyan"))
 
-        conexion = sqlite3.connect("/trivia.db")
+        # conexion = sqlite3.connect("/trivia.db")
+        conexion = sqlite3.connect("{}/trivia.db".format(os.getcwd()))
 
         bienvenida = "- SERVER: Hola soy el server. ¿Cómo te llamas?"
         dato = pickle.dumps(bienvenida)
@@ -79,7 +80,8 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
         while True:
 
             if pidnieto == 0:       #? NIETO 
-                conexion = sqlite3.connect("/trivia.db")
+                conexion = sqlite3.connect("{}/trivia.db".format(os.getcwd()))
+                # conexion = sqlite3.connect("/trivia.db")
                 if preguntas:
                     print(colored("\nProceso NIETO: {} {} Hilo: {} está buscando pregunta en la BD".format(os.getppid(), os.getpid(), threading.current_thread().name), "magenta"))
                     pregunta, respuesta1, respuesta2 = pregunta_random(conexion, hechas)

@@ -187,3 +187,55 @@ Server levantado el 14/4/2023 23:19:2
 Server levantado el 14/4/2023 23:19:5
 
 Server levantado el 14/4/2023 23:19:8
+
+Server levantado el 15/4/2023 14:58:38
+
+Server levantado el 15/4/2023 14:58:48
+
+Server levantado el 15/4/2023 14:59:23
+
+Server levantado el 17/4/2023 10:5:11
+
+Server levantado el 17/4/2023 10:5:16
+
+Server levantado el 17/4/2023 10:5:21
+
+    ::ffff:127.0.0.1:49428 entró a la sala 
+
+Server levantado el 17/4/2023 10:6:15
+
+    127.0.0.1:49434 entró a la sala 
+
+Server levantado el 17/4/2023 10:7:51
+
+    127.0.0.1:49436 entró a la sala 
+
+Server levantado el 17/4/2023 10:9:4
+
+    127.0.0.1:49445 entró a la sala 
+
+Server levantado el 17/4/2023 10:16:2
+
+Server levantado el 17/4/2023 10:16:34
+
+    ::ffff:127.0.0.1:49534 entró a la sala 
+
+Server levantado el 17/4/2023 10:40:49
+
+    ::ffff:127.0.0.1:49636 entró a la sala 
+
+    ::ffff:127.0.0.1:49636 'pepe' abandonó la la sala 
+
+    ::ffff:127.0.0.1:49637 entró a la sala 
+
+    ::ffff:127.0.0.1:49637 'pepe' abandonó la la sala 
+
+Server levantado el 17/4/2023 10:42:41
+
+Server levantado el 17/4/2023 10:42:45
+
+Server levantado el 17/4/2023 11:37:52
+
+    127.0.0.1:49898 entró a la sala 
+
+    127.0.0.1:49898 'pepe' abandonó la la sala 
