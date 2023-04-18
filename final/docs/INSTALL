@@ -1,10 +1,22 @@
-1- descargar imagen de dockhub
+1- descargar imagen de Docker Hub: 
+            $ docker pull martingreyes/finalcompu2
 
-2- crear imagen de Docker: docker build --no-cache -t compu2 .
+2- ejecutar contenedor a partir de la imagen:
+            $ docker run -it --rm -p 1234:1234 martingreyes/finalcompu2
 
-3- docker run -it --rm -p 1234:1234 compu2
+3- levantar server dentro del contenedor: 
 
-4- levantar server: $ python3 server.py -p 1234
+            $ python3 server.py -p 1234
 
-    conectarte cliente: $ python3 cliente.py -d 127.0.0.1 -p 1234 -ip 4
-                        $ python3 cliente.py -d ::1 -p 1234 -ip 6 
+4- contectarte al server desde tu maquina:
+
+            $ python3 cliente.py -d 127.0.0.1 -p 1234 -ip 4
+            $ python3 cliente.py -d ::1 -p 1234 -ip 6
+
+# contruir imagen a partir de Dockerfile: $ docker build --no-cache -t compu2 .
+
+# ejecutar contenedor a partir de la imagen compu2: $ docker run -it --rm -p 1234:1234 compu2
+
+# subir imagen a Docker Hub:
+            #   $ docker tag compu2 martingreyes/finalcompu2
+            #   $ docker push martingreyes/finalcompu2
