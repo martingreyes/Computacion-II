@@ -47,7 +47,7 @@ import time
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", type=int, help="el programa generará n procesos hijos.", required=True)
+    parser.add_argument("-n", type=int, help="el programa generará n procesos hijos.", required=True, choices=range(1, 28))
     parser.add_argument("-r", type=int, help= "cada proceso almacenará en el archivo su letra r veces", required=True)
     parser.add_argument("-f", type=str, help= "path del archivo de texto", required=True)
     parser.add_argument("-v", help="ponga -v para activar el modo verboso", action='store_true', default=False)
@@ -71,24 +71,14 @@ def main():
 
                     print("\nProceso {} escribiendo letra '{}'".format(os.getpid(), string.ascii_uppercase[contador]))
 
-                    o = open(args.f + "/archivo", "a")
+                o = open(args.f + "/archivo", "a")
                 
-                    o.write(string.ascii_uppercase[contador])
+                o.write(string.ascii_uppercase[contador])
 
-                    o.flush()             # realizar flush() luego de cada escritura (?)
+                o.flush()             # realizar flush() luego de cada escritura (?)
 
-                    time.sleep(1)       # delay de 1 seg entre escritura y escritura (?)
+                time.sleep(1)       # delay de 1 seg entre escritura y escritura (?)
                 
-                else:           
-
-                    o = open(args.f + "/arhivo", "a")
-                
-                    o.write(string.ascii_uppercase[contador])
-
-                    o.flush()             # realizar flush() luego de cada escritura (?)
-
-                    # time.sleep(1)       # delay de 1 seg entre escritura y escritura (?)
-
             os._exit(0) 
 
         contador = contador + 1

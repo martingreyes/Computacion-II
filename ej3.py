@@ -21,6 +21,11 @@
 # El archivo /tmp/salida no contendrá nada nuevo, ya que el comando fallará. El archivo /tmp/log contendrá:
 # fechayhora: ls: cannot access '/cualquiera': No such file or directory
 
+"""
+Diferencia entre sdtin, stdout, stderr:
+https://blog.carreralinux.com.ar/2017/07/descriptores-de-archivo-stdin-stdout-stderr/
+"""
+
 def main():
 
     import argparse

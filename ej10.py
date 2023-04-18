@@ -8,6 +8,9 @@
 
 # El primer hijo debera leer desde dicha cola de mensajes y mostrar el contenido cifrado por pantalla.
 
+#? Thread (hilos) sirve mas para las tareas de entrada y salida, mientras que los procesos hijos sirven mas para tareas de mayor procesamiento de datos
+#? Use Queue para IPC y no multiprocessing.pipe ya que esta ultima no es thread safe
+
 import threading, sys, string, queue
 
 def leer(cola, cola2):
@@ -22,7 +25,7 @@ def leer(cola, cola2):
             break
         print(encriptado)
     
-
+ 
 def encriptar(cola, cola2):
     while True:
         linea = cola.get()

@@ -18,7 +18,7 @@ RUN git clone https://github.com/martingreyes/Computacion-II.git
 
 WORKDIR /Computacion-II/final/app
 
-RUN python3 trivia.py
+# RUN python3 trivia.py  # no hace falta ya que en el repo ya esta la bd
 
 EXPOSE 1234
 

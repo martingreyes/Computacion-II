@@ -19,22 +19,33 @@ def main():
         
         archivo = open(args.f, "r")
         lineas = archivo.readlines()    # lista donde c/elemento es una linea del .txt
+
+        nbytes = []
+
+        for x in lineas:
+            nbytes.append(len(x))
+        
     
         padre = os.getpid()
 
         r, w = os.pipe()
         r2, w2 = os.pipe()
 
+        
+
         for contador in range(numero):
 
             os.fork()
             
-            if os.getpid() != padre:         
+            if os.getpid() != padre:
+
+                
 
                 # el hijo lee
                 os.close(w)
                 r = os.fdopen(r)
-                string = r.read()
+                string = r.readline(20)
+                print("leyendo {} ({})".format(string, os.getpid()))
 
                 # el hijo escribe
                 os.close(r2)
@@ -53,13 +64,13 @@ def main():
         w.close()
 
         # lee el padre 
-        os.close(w2)
-        r2 = os.fdopen(r2)
-        while True:
-            string2 = r2.read()
-            if len(string2) == 0:
-                break
-            print(string2)
+        # os.close(w2)
+        # r2 = os.fdopen(r2)
+        # while True:
+        #     string2 = r2.read()
+        #     if len(string2) == 0:
+        #         break
+        #     print(string2)
 
         for i in range(numero):
             os.wait()    
