@@ -12,7 +12,6 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
         print(colored("\nProceso HIJO: {} {} Hilo: {} está recibiendo un cliente".format(os.getppid(), os.getpid(), threading.current_thread().name), "cyan"))
 
-        # conexion = sqlite3.connect("/trivia.db")
         conexion = sqlite3.connect("{}/trivia.db".format(os.getcwd()))
 
         bienvenida = "- SERVER: Hola soy el server. ¿Cómo te llamas?"
@@ -56,7 +55,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                 self.request.sendall(despedida)    
                 print("\n-----------  '{}' {}:{} SALIÓ DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
                 print(colored("\nProceso HIJO: {} {} Hilo: {} está escribiendo en log.txt".format(os.getppid(), os.getpid(), threading.current_thread().name), "cyan"))
-                escribir("\n    {}:{} '{}' salió de la la sala ".format(self.client_address[0], self.client_address[1],alias), lock)
+                escribir("\n    {}:{} '{}' salió de la sala ".format(self.client_address[0], self.client_address[1],alias), lock)
                 print(colored("\nProceso HIJO: {} {} Hilo: {} muriendo ... ".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
                 sys.exit()
 
@@ -81,7 +80,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
             if pidnieto == 0:       #? NIETO 
                 conexion = sqlite3.connect("{}/trivia.db".format(os.getcwd()))
-                # conexion = sqlite3.connect("/trivia.db")
+
                 if preguntas:
                     print(colored("\nProceso NIETO: {} {} Hilo: {} está buscando pregunta en la BD".format(os.getppid(), os.getpid(), threading.current_thread().name), "magenta"))
                     pregunta, respuesta1, respuesta2 = pregunta_random(conexion, hechas)
@@ -127,7 +126,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                         print(colored("\nProceso NIETO: {} {} Hilo: {} ha muerto. Su estado es {}".format(os.getppid(), os.getpid(), threading.current_thread().name, nieto.status()), "magenta"))
                     
                         print(colored("\nProceso HIJO: {} {} Hilo: {} está escribiendo en log.txt".format(os.getppid(), os.getpid(), threading.current_thread().name), "cyan"))
-                        escribir("\n    {}:{} '{}' abandonó la la sala ".format(self.client_address[0], self.client_address[1],alias), lock)
+                        escribir("\n    {}:{} '{}' abandonó la sala ".format(self.client_address[0], self.client_address[1],alias), lock)
                         print(colored("\nProceso HIJO: {} {} Hilo: {} muriendo ... ".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
 
                         break 
@@ -171,18 +170,14 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
                     print("\n-----------  '{}' {}:{} SALIÓ DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
                     print(colored("\nProceso HIJO: {} {} Hilo: {} está escribiendo en log.txt".format(os.getppid(), os.getpid(), threading.current_thread().name), "cyan"))
-                    escribir("\n    {}:{} '{}' salió de la la sala ".format(self.client_address[0], self.client_address[1],alias), lock)
+                    escribir("\n    {}:{} '{}' salió de la sala ".format(self.client_address[0], self.client_address[1],alias), lock)
                     print(colored("\nProceso HIJO: {} {} Hilo: {} muriendo ... ".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
                     break 
 
-
             contador = contador + 1
-
 
             if contador == 6:
                 preguntas = False
-
-
 
 class ForkedTCPServer4(socketserver.ForkingMixIn, socketserver.TCPServer):
     address_family = socket.AF_INET
@@ -244,7 +239,6 @@ if __name__ == '__main__':
     direcciones.append(socket.getaddrinfo("0.0.0.0", puerto, socket.AF_INET, 1)[0])
     direcciones.append(socket.getaddrinfo("::", puerto, socket.AF_INET6, 1)[0])
 
-    #TODO Try (en Docker tira error cuando levanta thread 2 ipv6)
     for direccion in direcciones:
         threading.Thread(target=abrir_socket_procesos, args=(direccion,)).start()   #? Lanzo un hilo para sokcet IPv4 y otro para IPv6
 
