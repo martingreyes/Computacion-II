@@ -1,0 +1,17 @@
+LOG
+
+Server levantado el 18/4/2023 16:40:34
+
+    ::ffff:127.0.0.1:52627 entró a la sala 
+
+Server levantado el 18/4/2023 16:41:55
+
+    127.0.0.1:52629 entró a la sala 
+
+    127.0.0.1:52629 'pepe' salió de la sala 
+
+Server levantado el 18/4/2023 16:43:14
+
+    127.0.0.1:52630 entró a la sala 
+
+    127.0.0.1:52630 'pepe' abandonó la sala 

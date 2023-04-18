@@ -1,6 +1,6 @@
 import sqlite3
 
-conexion = sqlite3.connect("/trivia.db".format())
+conexion = sqlite3.connect("trivia.db".format())
 
 preguntas = [(0, "¿Capital de Brasil?"),
             (1, "¿Nacionalidad de Roger Federer?"),
