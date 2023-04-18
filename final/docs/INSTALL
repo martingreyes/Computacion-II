@@ -1,0 +1,10 @@
+1- descargar imagen de dockhub
+
+2- crear imagen de Docker: docker build --no-cache -t compu2 .
+
+3- docker run -it --rm -p 1234:1234 compu2
+
+4- levantar server: $ python3 server.py -p 1234
+
+    conectarte cliente: $ python3 cliente.py -d 127.0.0.1 -p 1234 -ip 4
+                        $ python3 cliente.py -d ::1 -p 1234 -ip 6 
