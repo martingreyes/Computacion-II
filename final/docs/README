@@ -2,7 +2,7 @@ Juego de Preguntas y Respuestas
 
 El juego es individual y consiste en que el jugador, es decir, el cliente, responda 5 preguntas de opción múltiple. Cada pregunta respondida correctamente suma 20 puntos, por lo que el puntaje máximo es de 100 puntos. Al finalizar el cuestionario, el jugador podrá ver el puntaje que obtuvo y su posición en el ranking. Antes de comenzar el juego, el cliente deberá iniciar sesión con su nombre de usuario y contraseña o, en su defecto, crearse una cuenta en caso de no tener una. Mientras responde las preguntas, el jugador podrá abandonar la partida escribiendo "exit". Este comando finalizará la conexión con el cliente, pero con la consecuencia de que no se contabilizarán los puntos obtenidos hasta ese momento.
 
-Para comenzar a jugar primero se debe levantar el servidor pasándole el puerto. En caso de no especificar el puerto, utilizará el 1234 por defecto.
+Para comenzar a jugar primero se debe levantar el servidor pasándole el puerto en el que va escuchar. En caso de no especificar el puerto, utilizará el 1234 por defecto.
 
 Luego, es necesario ejecutar el cliente, proporcionándole los siguientes parámetros: la dirección IP y el puerto en el que el servidor está escuchando, junto con el número 6 o 4 para indicar si se desea establecer una conexión IPv6 o IPv4, respectivamente.
 
