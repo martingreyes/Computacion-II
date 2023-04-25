@@ -8,10 +8,10 @@
 
             $ python3 server.py -p 1234
 
-4- contectarte al server desde tu maquina:
+4- contectarte al server desde tu maquina ubicado en la carpeta final:
 
-            $ python3 cliente.py -d 127.0.0.1 -p 1234 -ip 4
-            $ python3 cliente.py -d ::1 -p 1234 -ip 6
+            $ python3 app/cliente.py -d 127.0.0.1 -p 1234 -ip 4
+            $ python3 app/cliente.py -d ::1 -p 1234 -ip 6
 
 # contruir imagen a partir de Dockerfile: $ docker build --no-cache -t compu2 .
 
