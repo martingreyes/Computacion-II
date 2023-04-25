@@ -119,7 +119,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                     if respuesta == "exit":                     
                         mensaje = pickle.dumps("- SERVER: Chau chau")
                         self.request.sendall(mensaje) 
-                        print("\n-----------  '{}' {}:{} ABANDONÓ DE LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
+                        print("\n-----------  '{}' {}:{} ABANDONÓ LA SALA -----------".format(alias,self.client_address[0], self.client_address[1]))
                         os.kill(pidnieto, signal.SIGTERM)      #? No hace falta ya que NIETO se muere cuando HIJO muere 
                         time.sleep(2)
                         nieto = psutil.Process(pidnieto)        #? crea un objeto Process que representa un proceso del sistema identificado por su PID, para luego ver su estado
