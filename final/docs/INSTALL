@@ -1,8 +1,8 @@
 1- descargar imagen de Docker Hub: 
-            $ docker pull martingreyes/finalcompu2
+            $ docker pull martingreyes/finalcomputacion2
 
 2- ejecutar contenedor a partir de la imagen:
-            $ docker run -it --rm -p 1234:1234 martingreyes/finalcompu2
+            $ docker run -it --rm -p 1234:1234 martingreyes/finalcomputacion2
 
 3- levantar server dentro del contenedor: 
 
