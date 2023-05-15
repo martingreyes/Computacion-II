@@ -66,8 +66,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                     
             conexion.close()
 
-        r1,w1 = multiprocessing.Pipe()
-        r2,w2 = multiprocessing.Pipe()
+        hijo_pipe, nieto_pipe = multiprocessing.Pipe()
 
         pidnieto = os.fork()
 
@@ -84,19 +83,22 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                 if preguntas:
                     print(colored("\nProceso NIETO: {} {} Hilo: {} está buscando pregunta en la BD".format(os.getppid(), os.getpid(), threading.current_thread().name), "magenta"))
                     pregunta, respuesta1, respuesta2 = pregunta_random(conexion, hechas)
-                    w1.send(pregunta)
-                    w1.send(respuesta1)
-                    w1.send(respuesta2)
 
-                    msg = r2.recv()
+                    nieto_pipe.send(pregunta)
+                    nieto_pipe.send(respuesta1)
+                    nieto_pipe.send(respuesta2)
+
+                    msg = nieto_pipe.recv()
 
                 else:
                     print(colored("\nProceso NIETO: {} {} Hilo: {} está escribiendo puntaje en la BD".format(os.getppid(), os.getpid(), threading.current_thread().name), "magenta"))
-                    puntaje = r2.recv()
+            
+                    puntaje = nieto_pipe.recv()
                     conexion.execute("""UPDATE jugadores SET puntaje = {} WHERE alias = '{}' """.format(puntaje, alias))
                     conexion.commit()
                     ranking = conexion.execute("SELECT puntaje, alias FROM jugadores ORDER by puntaje DESC").fetchall()
-                    w1.send(ranking)
+                  
+                    nieto_pipe.send(ranking)
                     conexion.close()
                     break
                     
@@ -105,9 +107,10 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
                 if preguntas:
                     print(colored("\nProceso HIJO: {} {} Hilo: {} está interactuando con '{}'".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
-                    pregunta = r1.recv()
-                    respuesta1 = r1.recv()
-                    respuesta2 = r1.recv()
+          
+                    pregunta = hijo_pipe.recv()
+                    respuesta1 = hijo_pipe.recv()
+                    respuesta2 = hijo_pipe.recv()
                     pregunta_completa = "- {}) {} \n     a) {} \n     b) {}".format(contador, pregunta["pregunta"], respuesta1["respuesta"], respuesta2["respuesta"])
 
                     dato = pickle.dumps(pregunta_completa)
@@ -140,16 +143,17 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
                         puntaje = puntaje + 20
 
-                    w2.send("\nNECESITO OTRA PREGUNTA!")
+                    hijo_pipe.send("\nNECESITO OTRA PREGUNTA!")
 
 
                 else:
                     print(colored("\nProceso HIJO: {} {} Hilo: {} está mostrando puntaje a '{}'".format(os.getppid(), os.getpid(), threading.current_thread().name, alias), "cyan"))
                     mensaje = pickle.dumps("- SERVER: Obtuviste {} puntos".format(puntaje))
                     self.request.sendall(mensaje) 
-                    w2.send(puntaje)
 
-                    ranking = r1.recv()
+                    hijo_pipe.send(puntaje)
+
+                    ranking = hijo_pipe.recv()
 
                     os.kill(pidnieto, signal.SIGTERM)      #? No hace falta ya que NIETO se muere cuando HIJO muere 
                     time.sleep(2)
